@@ -5,3 +5,4 @@ if __name__ == '__main__':
     # ((WhiteQueen, WhiteSpider1, WhiteSpider2, WhiteBeetle1, WhiteBeetle2, WhiteGrasshopper1, WhiteGrasshopper2, WhiteAnt1, WhiteAnt2, WhiteAnt3)
     #  (BlackQueen, BlackSpider1, BlackSpider2, BlackBeetle1, BlackBeetle2, BlackGrasshopper1, BlackGrasshopper2, BlackAnt1, BlackAnt2, BlackAnt3))
     pass
+
