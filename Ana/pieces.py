@@ -10,7 +10,7 @@ class Piece:
 
     @abstractmethod
     def check_valid_move(self, new_pos):
-        pass
+        raise NotImplementedError("This method should not be called directly.")
 
 
 class Queen(Piece, ABC):
