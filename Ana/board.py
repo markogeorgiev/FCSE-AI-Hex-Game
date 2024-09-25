@@ -40,6 +40,7 @@ class Board:
                 raise PositionErrorException("Invalid position")
 
     # need to check how its working
+    #optimize it with sets instead of lists
     def breaks_hive(self, curr_pos, end_pos):
         all_positions_taken = [pos for pos in self.positions_taken['white']] + [pos for pos in self.positions_taken['black']]
 
@@ -53,11 +54,11 @@ class Board:
         if start_pos is None: return False
 
         # perform dfs to see if you will visit the rest of the taken positions in the hive
-        visited = []
+        visited = set()
         self.dfs(start_pos, all_positions_taken, visited)
 
         # check if all pieces are still connected (each piece has been visited even after removing your target one)
-        all_connected = set(all_positions_taken) == set(visited)
+        all_connected = set(all_positions_taken) == visited
 
         return not all_connected
 
