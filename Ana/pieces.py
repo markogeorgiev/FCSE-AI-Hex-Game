@@ -8,6 +8,8 @@ class Piece:
     @abstractmethod
     def allowed_movements(self):
         pass
+    def check_valid_move(self, new_pos):
+        raise NotImplementedError("This method should not be called directly.")
 
 
 class Queen(Piece, ABC):

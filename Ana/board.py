@@ -40,7 +40,7 @@ class Board:
                 raise PositionErrorException("Invalid position")
 
     # need to check how its working
-    #optimize it with sets instead of lists
+    # optimize it with sets instead of lists
     def breaks_hive(self, curr_pos, end_pos):
         all_positions_taken = [pos for pos in self.positions_taken['white']] + [pos for pos in self.positions_taken['black']]
 
