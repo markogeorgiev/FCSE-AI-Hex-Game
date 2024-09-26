@@ -4,11 +4,18 @@ from exceptions import *
 class Board:
     # Implement a counter for turns, after the 3rd round each player MUST have the Queen placed on the board.
     def __init__(self, n, m):
+        self.whiteTurn = True
+        self.whiteTurnCount = 0
+        self.blackTurnCount = 0
+
         self.board = [(i, j) for i in range(0, n) for j in range(0, m)]
         self.positions_taken = {'white': [], 'black': []}
         # Objects of type Piece currently on the board
         # Every piece will be a stack, cause the Beetle can be on top of any piece.
         self.pieces = []
+
+    def game_over(self):
+        pass
 
     def add_piece(self, color, coords, piece):
         # check valid positioning first
