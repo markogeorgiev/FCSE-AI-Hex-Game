@@ -1,5 +1,6 @@
 # from abc import abstractmethod, ABC
 #
+########## WILL NOT BE USED !!! ######################################
 #
 # class Piece:
 #     def __init__(self, curr_pos):
