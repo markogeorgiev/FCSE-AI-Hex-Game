@@ -2,7 +2,7 @@
 
 # move_generator.py
 
-from utils.constants import QUEEN, SPIDER, BEETLE, GRASSHOPPER, ANT
+from Marko.hive_game.utils.constants import QUEEN, SPIDER, BEETLE, GRASSHOPPER, ANT
 
 
 def generate_all_moves(board, player):
