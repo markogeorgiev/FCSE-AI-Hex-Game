@@ -1,6 +1,19 @@
 # Contains the Board class and board state management
 # board.py
 
+"""
+place_piece(piece, position): Places a piece on the board at the given position.
+move_piece(start_pos, end_pos): Moves a piece from one position to another, updating its location on the board.
+get_adjacent_positions(position): Returns a list of all positions adjacent to the given one. In Hive, the board is hexagonal, so this accounts for the six neighboring spaces.
+is_legal_move(piece, target_position): Checks if moving a piece to a target position is legal. This method will be extended as you implement more game rules (e.g., sliding, disconnection).
+get_spider_moves(position, player): Returns valid moves for a spider, which can move exactly 3 spaces without backtracking.
+get_grasshopper_moves(position): Determines valid moves for the Grasshopper, which jumps in a straight line over adjacent pieces.
+get_ant_moves(position): Returns valid moves for the Ant, which can move any number of spaces around the board.
+get_beetle_climbing_moves(position): Returns valid moves for a Beetle climbing onto adjacent pieces.
+get_perimeter_moves(position, max_depth): A helper function to get all perimeter moves for pieces like the Ant or Spider.
+next_position_in_line(position, direction): Given a direction, this method calculates the next position in a straight line (used for Grasshopper).
+"""
+
 from Marko.hive_game.utils.constants import PLAYER_1, PLAYER_2
 from Marko.hive_game.utils.helpers import deep_copy_game_state
 
@@ -144,15 +157,3 @@ class Board:
         return x + dx, y + dy
 
 
-"""
-place_piece(piece, position): Places a piece on the board at the given position.
-move_piece(start_pos, end_pos): Moves a piece from one position to another, updating its location on the board.
-get_adjacent_positions(position): Returns a list of all positions adjacent to the given one. In Hive, the board is hexagonal, so this accounts for the six neighboring spaces.
-is_legal_move(piece, target_position): Checks if moving a piece to a target position is legal. This method will be extended as you implement more game rules (e.g., sliding, disconnection).
-get_spider_moves(position, player): Returns valid moves for a spider, which can move exactly 3 spaces without backtracking.
-get_grasshopper_moves(position): Determines valid moves for the Grasshopper, which jumps in a straight line over adjacent pieces.
-get_ant_moves(position): Returns valid moves for the Ant, which can move any number of spaces around the board.
-get_beetle_climbing_moves(position): Returns valid moves for a Beetle climbing onto adjacent pieces.
-get_perimeter_moves(position, max_depth): A helper function to get all perimeter moves for pieces like the Ant or Spider.
-next_position_in_line(position, direction): Given a direction, this method calculates the next position in a straight line (used for Grasshopper).
-"""
