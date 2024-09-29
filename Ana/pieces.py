@@ -16,6 +16,7 @@ class Piece:
 
 class Queen(Piece):
     def allowed_movements(self, board, firstRound, secondRound):
+        # move this into a seperate method for placing a piece, keep this one for moving a piece only.
         if firstRound:
             return board.show()
         elif secondRound:

@@ -3,7 +3,6 @@ from pieces import *
 class Board:
     # Implement a counter for turns, after the 3rd round each player MUST have the Queen placed on the board.
     def __init__(self, n, m, firstRound):
-        self.firstRound = firstRound
         self.board = [(i, j) for i in range(0, n) for j in range(0, m)]
         self.team_spaces = {'white': [], 'black': []}
 
@@ -19,18 +18,6 @@ class Board:
         self.pieces[piece.name] = piece
         self.team_spaces.get(piece.color).append(piece.position)
 
-    # def valid_positions(self, firstRound, piece):
-    #     return piece.allowed_movements(self.board)
-
-
-    # def check_for_neighbors(self, color, position):
-    #     adj_spaces = self.get_adjacent_spaces(position)
-    #     for space in adj_spaces:
-    #         if space in self.team_spaces[color]:
-    #             return True
-    #
-    #     return False
-
     def move_piece(self, piece, new_pos):
         # if it's valid, move the piece.
         pass
@@ -41,7 +28,6 @@ class Board:
             positions.append(piece.position)
 
         return set(positions)
-        # return set(piece.position for piece in self.pieces)
 
     def is_empty(self, position):
         return position not in self.occupied_positions()
@@ -102,6 +88,3 @@ class Board:
 
     def show(self):
         return self.board
-
-# board = Board(12, 12)
-# print(board.show())

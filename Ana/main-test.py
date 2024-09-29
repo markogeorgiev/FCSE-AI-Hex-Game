@@ -1,6 +1,8 @@
 from board import *
 from pieces import *
 
+################## THIS IS TEMPORARY FOR TESTING ONLY !!! ####################################
+
 whiteTurn = True
 invalidMovementFlag = False
 counter = 0
