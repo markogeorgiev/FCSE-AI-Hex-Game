@@ -4,42 +4,57 @@ from exceptions import *
 class Board:
     # Implement a counter for turns, after the 3rd round each player MUST have the Queen placed on the board.
     def __init__(self, n, m):
-        self.whiteTurn = True
-        self.whiteTurnCount = 0
-        self.blackTurnCount = 0
-
+        self.round = 0
         self.board = [(i, j) for i in range(0, n) for j in range(0, m)]
-        self.positions_taken = {'white': [], 'black': []}
+        self.team_spaces = {'white': [], 'black': []}
+
         # Objects of type Piece currently on the board
         # Every piece will be a stack, cause the Beetle can be on top of any piece.
-        self.pieces = []
+        # self.pieces = []
+        self.pieces = dict()
 
     def game_over(self):
         pass
 
-    def add_piece(self, color, coords, piece):
-        # check valid positioning first
-        try:
-            self.check_valid_positioning(color, coords)
-        except PositionErrorException as e:
-            print(e.message)
+    def add_piece(self, piece):
+        if not self.check_valid_move(True, piece, piece.position):
+            raise PositionErrorException(f"Invalid position for {piece.name} at {piece.position}")
 
-        self.positions_taken.get(color).append(coords)
-        self.pieces.append(piece)
+        self.pieces[piece.name] = piece
+        self.team_spaces.get(piece.color).append(piece.position)
 
-    def check_valid_move(self, piece, new_pos):
+    def check_valid_move(self, positioning, piece, new_pos): # positioning = True if we are just positioning the piece, not moving it
+        if positioning and piece.color == 'white':
+            return not self.check_for_neighbors('black', piece.position)
+        elif positioning and piece.color == 'black':
+            return not self.check_for_neighbors('white', piece.position)
+
         # checks if it's valid by each figure's rules
         # checks if it breaks the hive in 2 (implement a method)
+
         # checks if it overlaps with a taken tile (not valid for the beetle)
         pass
 
-    def move_piece(self, color, piece, new_pos):
-        self.check_valid_move(piece, new_pos)
+    def check_for_neighbors(self, color, position):
+        adj_spaces = self.get_adjacent_spaces(position)
+        for space in adj_spaces:
+            if space in self.team_spaces[color]:
+                return True
+
+        return False
+
+    def move_piece(self, piece, new_pos):
+        self.check_valid_move(False, piece, new_pos)
         # if it's valid, move the piece.
         pass
 
     def occupied_positions(self):
-        return set(piece.position for piece in self.pieces)
+        positions = []
+        for piece in self.pieces.values():
+            positions.append(piece.position)
+
+        return set(positions)
+        # return set(piece.position for piece in self.pieces)
 
     def is_empty(self, position):
         return position not in self.occupied_positions()
@@ -54,14 +69,14 @@ class Board:
         return [(x + dx, y + dy) for dx, dy in offsets]
 
     def is_valid_slide(self, start, end):
-        if end not in self.adjacent_coords(start):
+        if end not in self.get_adjacent_spaces(start):
             return False
 
         if self.breaks_hive(start, end):
             return False
 
         # check if the end position is adjacent to at least one other piece
-        adjacent_to_end = self.adjacent_coords(end)
+        adjacent_to_end = self.get_adjacent_spaces(end)
         for pos in adjacent_to_end:
             if pos != start and pos in self.occupied_positions():
                 return True
@@ -91,12 +106,12 @@ class Board:
 
         return not all_connected
 
-    def dfs(self, position, all_positions_taken, visited):
-        visited.append(position)
+    def dfs(self, position, occupied_positions, visited):
+        visited.add(position)
 
         for neighbor in self.get_adjacent_spaces(position):
-            if neighbor in all_positions_taken and neighbor not in visited:
-                self.dfs(neighbor, all_positions_taken, visited)
+            if neighbor in occupied_positions and neighbor not in visited:
+                self.dfs(neighbor, occupied_positions, visited)
 
     def show(self):
         return self.board
