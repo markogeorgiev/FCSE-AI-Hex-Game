@@ -56,17 +56,18 @@ class Beetle(Piece):
 class Spider(Piece):
     def allowed_movements(self, board):
         valid_moves = set()
-        visited = {self.position}
+        visited = set()
         self._dfs(board, self.position, 0, visited, valid_moves)
         return list(valid_moves)
 
     def _dfs(self, board, position, steps, visited, valid_moves):
         if steps == 3:
-            valid_moves.add(position)
+            if board.is_empty(position) and board.has_adjacent_piece(position):
+                valid_moves.add(position)
             return
 
+        visited.add(position)
         for neighbor in board.get_adjacent_spaces(position):
-            if board.is_valid_slide(position, neighbor) and neighbor not in visited:
-                visited.add(neighbor)
+            if neighbor not in visited and board.is_valid_slide(position, neighbor):
                 self._dfs(board, neighbor, steps + 1, visited, valid_moves)
-                visited.remove(neighbor)
+        visited.remove(position)

@@ -45,37 +45,26 @@ class Board:
         if self.breaks_hive(start, end):
             return False
 
-        # check if the end position is adjacent to at least one other piece
+        # Check if the end position is adjacent to at least one other piece
         adjacent_to_end = self.get_adjacent_spaces(end)
         for pos in adjacent_to_end:
             if pos != start and pos in self.occupied_positions():
                 return True
 
         return False
-
-    # need to check how its working
-    # optimize it with sets instead of lists
     def breaks_hive(self, curr_pos, end_pos):
-        occupied_positions = [pos for pos in self.occupied_positions()]
+        occupied_positions = list(self.occupied_positions())
+        if curr_pos in occupied_positions:
+            occupied_positions.remove(curr_pos)
 
-        # remove the piece we want to move
-        occupied_positions.remove(curr_pos)
-
-        # start the search with the first taken position
-        start_pos = occupied_positions[0]
-
-        # if there are no other pieces, the hive isn't broken
-        if start_pos is None:
+        if not occupied_positions:
             return False
 
-        # perform dfs to see if you will visit the rest of the taken positions in the hive
+        start_pos = occupied_positions[0]
         visited = set()
         self.dfs(start_pos, occupied_positions, visited)
 
-        # check if all pieces are still connected (each piece has been visited even after removing your target one)
-        all_connected = set(occupied_positions) == visited
-
-        return not all_connected
+        return set(occupied_positions) != visited
 
     def dfs(self, position, occupied_positions, visited):
         visited.add(position)
