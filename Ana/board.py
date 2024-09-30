@@ -1,8 +1,6 @@
-from pieces import *
-
 class Board:
     # Implement a counter for turns, after the 3rd round each player MUST have the Queen placed on the board.
-    def __init__(self, n, m, firstRound):
+    def __init__(self, n, m):
         self.board = [(i, j) for i in range(0, n) for j in range(0, m)]
         self.team_spaces = {'white': [], 'black': []}
 
@@ -14,12 +12,10 @@ class Board:
     def game_over(self):
         pass
 
-    def add_piece(self, piece):
+    def move_add_piece(self, piece):
+        # if it's valid, move the piece.
         self.pieces[piece.name] = piece
         self.team_spaces.get(piece.color).append(piece.position)
-
-    def move_piece(self, piece, new_pos):
-        # if it's valid, move the piece.
         pass
 
     def occupied_positions(self):
@@ -36,7 +32,8 @@ class Board:
         adjacent_spaces = self.get_adjacent_spaces(position)
         return any(not self.is_empty(space) for space in adjacent_spaces)
 
-    def get_adjacent_spaces(self, pos):
+    @staticmethod
+    def get_adjacent_spaces(pos):
         x, y = pos
         offsets = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, -1)]
         return [(x + dx, y + dy) for dx, dy in offsets]
@@ -61,14 +58,15 @@ class Board:
     def breaks_hive(self, curr_pos, end_pos):
         occupied_positions = [pos for pos in self.occupied_positions()]
 
-        #remove the piece we want to move
+        # remove the piece we want to move
         occupied_positions.remove(curr_pos)
 
         # start the search with the first taken position
         start_pos = occupied_positions[0]
 
         # if there are no other pieces, the hive isn't broken
-        if start_pos is None: return False
+        if start_pos is None:
+            return False
 
         # perform dfs to see if you will visit the rest of the taken positions in the hive
         visited = set()

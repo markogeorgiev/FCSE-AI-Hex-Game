@@ -3,25 +3,37 @@ from abc import abstractmethod
 
 class Piece:
     def __init__(self, name):
-        self.name = name # (color + piece type) ex. WhiteBeetle1 ; queen will be queen
+        self.name = name # (color + piece type) ex. WhiteBeetle1 ; queen will be Queen
         self.position = None
         self.color = 'white' if 'White' in self.name else 'black'
 
     def update_position(self, new_pos):
         self.position = new_pos
 
-    @abstractmethod
-    def allowed_movements(self, board, firstRound, secondRound):
-        pass
-
-class Queen(Piece):
-    def allowed_movements(self, board, firstRound, secondRound):
-        # move this into a seperate method for placing a piece, keep this one for moving a piece only.
+    def place_piece(self, board, firstRound, secondRound):
         if firstRound:
             return board.show()
         elif secondRound:
-            return board.get_adjacent_spaces(board.pieces[next(iter(board.pieces))].position)
+            first_piece = next(iter(board.pieces.values()))
+            return board.get_adjacent_spaces(first_piece.position)
+        else:
+            own_team_pieces = set(board.team_spaces[self.color])
+            opposite_team_pieces = set(board.team_spaces['black' if self.color == 'white' else 'white'])
 
+            all_adjacent = set().union(*[set(board.get_adjacent_spaces(pos)) for pos in own_team_pieces])
+            opposite_adjacent = set().union(*[set(board.get_adjacent_spaces(pos)) for pos in opposite_team_pieces])
+
+            available_spaces = all_adjacent - opposite_adjacent - own_team_pieces - opposite_team_pieces
+
+            return list(available_spaces)
+
+
+    @abstractmethod
+    def allowed_movements(self, board):
+        pass
+
+class Queen(Piece):
+    def allowed_movements(self, board):
         adjacent_spaces = board.get_adjacent_spaces(self.position)
         valid_moves = []
         for space in adjacent_spaces:
@@ -32,12 +44,7 @@ class Queen(Piece):
         return valid_moves
 
 class Beetle(Piece):
-    def allowed_movements(self, board, firstRound, secondRound):
-        if firstRound:
-            return board.show()
-        elif secondRound:
-            return board.get_adjacent_spaces(board.pieces[next(iter(board.pieces))].position)
-
+    def allowed_movements(self, board):
         adjacent_spaces = board.get_adjacent_spaces(self.position)
         valid_moves = []
         for space in adjacent_spaces:
@@ -47,12 +54,7 @@ class Beetle(Piece):
         return valid_moves
 
 class Spider(Piece):
-    def allowed_movements(self, board, firstRound, secondRound):
-        if firstRound:
-            return board.show()
-        elif secondRound:
-            return board.get_adjacent_spaces(board.pieces[next(iter(board.pieces))].position)
-
+    def allowed_movements(self, board):
         valid_moves = set()
         visited = {self.position}
         self._dfs(board, self.position, 0, visited, valid_moves)
