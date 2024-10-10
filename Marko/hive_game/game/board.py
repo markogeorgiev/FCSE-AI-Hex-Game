@@ -17,10 +17,10 @@ next_position_in_line(position, direction): Given a direction, this method calcu
 from Marko.hive_game.utils.constants import PLAYER_1, PLAYER_2
 from Marko.hive_game.utils.helpers import deep_copy_game_state
 
-class Board:
-    def __init__(self):
+class Board():
+    def __init__(self, grid_size=10):
         # Dictionary storing pieces at each position: { (x, y): Piece }
-        self.grid = {}
+        self.grid = [[(i, j) for j in range(grid_size)] for i in range(grid_size)]
 
     def place_piece(self, piece, position):
         """Place a piece at the given position."""
@@ -40,6 +40,35 @@ class Board:
     def get_piece(self, position):
         """Get the piece at a specific position."""
         return self.grid.get(position, None)
+
+    def is_game_over(self):
+        """Check if the game is over."""
+        players = [1, 2]
+        for player in players:
+            if self.is_queen_surrounded(player):
+                print(f"Player {player} has lost! Game Over.")
+                return True
+        return False
+
+    def is_queen_surrounded(self, player):
+        """Check if the given player's Queen is surrounded."""
+        queen_position = self.find_queen(player)
+        if not queen_position:
+            return False  # No queen found for this player
+
+        # Check adjacent positions for surrounding pieces
+        adjacent_positions = self.get_adjacent_positions(queen_position)
+        surrounding_count = sum(
+            1 for pos in adjacent_positions if self.get_piece(pos) and self.get_piece(pos).player != player)
+
+        return surrounding_count >= 6  # The Queen is surrounded if it has 6 opposing pieces around it
+
+    def find_queen(self, player):
+        """Find the Queen piece for the given player."""
+        for position, piece in self.grid.items():
+            if piece.type == 'Queen' and piece.player == player:
+                return position
+        return None
 
     def is_legal_move(self, piece, target_position):
         """Check if a move to the target position is legal."""
@@ -155,5 +184,3 @@ class Board:
         x, y = position
         dx, dy = direction
         return x + dx, y + dy
-
-
