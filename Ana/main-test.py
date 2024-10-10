@@ -14,7 +14,7 @@ def get_piece_class(piece_name):
 
 
 def main():
-    board = Board(12, 12, False)
+    board = Board(12, 12)
     white_turn = True
     round_counter = {'white': 0, 'black': 0}
     queens_placed = {'white': False, 'black': False}
@@ -102,11 +102,6 @@ def main():
     print("Game Over!")
     print("Final board state:")
     print(board.occupied_positions())
-
-
-if __name__ == "__main__":
-    main()
-
 
 if __name__ == "__main__":
     main()
