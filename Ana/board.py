@@ -35,7 +35,7 @@ class Board:
     @staticmethod
     def get_adjacent_spaces(pos):
         x, y = pos
-        offsets = [(0, -1), (-1, 0), (0, 1), (1, 1), (1, 0), (1, -1)]
+        offsets = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 0), (0, -1)]
         return [(x + dx, y + dy) for dx, dy in offsets]
 
     def is_valid_slide(self, start, end):
