@@ -35,8 +35,12 @@ class Board:
     @staticmethod
     def get_adjacent_spaces(pos):
         x, y = pos
-        offsets = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 0), (0, -1)]
-        return [(x + dx, y + dy) for dx, dy in offsets]
+        offsets_even = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 0), (0, -1)]
+        offsets_odd = [(0, -1), (-1, 0), (0, 1), (1, 1), (1, 0), (1, -1)]
+        if y % 2 == 0:
+            return [(x + dx, y + dy) for dx, dy in offsets_even]
+        else:
+            return [(x + dx, y + dy) for dx, dy in offsets_odd]
 
     def is_valid_slide(self, start, end):
         if end not in self.get_adjacent_spaces(start):
