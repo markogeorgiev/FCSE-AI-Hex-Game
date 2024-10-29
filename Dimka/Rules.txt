@@ -1,0 +1,19 @@
+# Hive Game Rules
+
+## General Rules for the Game
+
+1. Game ends when one of the queens is completely surrounded.
+2. Queen must be placed within the first 4 moves for both players.
+3. When placing a new piece, only on the first turn it is allowed to touch a piece of the opposite color.
+4. After a piece has been placed it can make any one of its legal moves.
+5. The hive must be linked at all times. A move may not break the hive.
+6. Except for the Beetle and Grasshopper the other pieces can only move if they are completely free to do so. Meaning, they must not be surrounded by other pieces in order to make any move.
+7. If with a single move, both queens are completely surrounded (regardles of the piece color), the game ends in a draw.
+8. Pieces cannot move into a piece, they physically can't slide into. Meaning - there has to be a at least two adjacent-tile wide gap.
+
+## Piece Move Rules
+1. QUEEN - The Queen can only move one Square in any direction.
+2. BEETLE - Similar to the Queen, the Beetle can only move 1 Square in any direction. However, the Beetle can move on top of another piece, rendering that piece immobile. Beetles can Stack.
+3. GRASSHOPPER - The GP can only move in a straight line within the board. *It can not move diagonally.
+4. SPIDER - The Spider always moves a total of three spaces. For the spider, it can only move along  the hive, so when counting tiles (moves), we only count those that are neighbouring a piece.
+5. ANT - The Ant can move anywhere as long as the game restrictions are followed.
