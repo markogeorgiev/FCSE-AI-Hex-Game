@@ -28,10 +28,9 @@ class Piece:
 
             return list(available_spaces)
 
-
     @abstractmethod
     def allowed_movements(self, board):
-        pass
+        return NotImplemented('This should not be called')
 
 class Queen(Piece):
     def allowed_movements(self, board):
