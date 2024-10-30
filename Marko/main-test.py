@@ -1,5 +1,5 @@
 from board import Board
-from pieces import Queen, Beetle, Spider
+from pieces import Queen, Beetle, Spider, Ant, Grasshopper
 
 
 def get_piece_class(piece_name):
@@ -9,6 +9,10 @@ def get_piece_class(piece_name):
         return Beetle
     elif 'Spider' in piece_name:
         return Spider
+    elif 'Ant' in piece_name:
+        return Ant
+    elif 'Grasshopper' in piece_name:
+        return Grasshopper
     else:
         raise ValueError("Invalid piece name")
 
@@ -64,15 +68,15 @@ def main():
                 continue
 
         elif action == 'add':
-            piece_type = input("Enter the type of piece to add (Queen/Beetle/Spider): ")
+            piece_type = input("Enter the type of piece to add (Queen/Beetle/Spider/Ant/Grasshopper): ")
             piece_name = f"{current_color.capitalize()}{piece_type}"
 
             if 'Queen' in piece_name:
                 queens_placed[current_color] = True
 
             try:
-                PieceClass = get_piece_class(piece_name)
-                piece = PieceClass(piece_name)
+                piece_class = get_piece_class(piece_name)
+                piece = piece_class(piece_name)
             except ValueError:
                 print("Invalid piece type. Try again.")
                 continue
