@@ -21,16 +21,27 @@ class Piece:
             own_team_pieces = set(board.team_spaces[self.color])
             opposite_team_pieces = set(board.team_spaces['black' if self.color == 'white' else 'white'])
 
-            all_adjacent = set().union(*[set(board.get_adjacent_spaces(pos)) for pos in own_team_pieces])
+            own_adjacent = set().union(*[set(board.get_adjacent_spaces(pos)) for pos in own_team_pieces])
             opposite_adjacent = set().union(*[set(board.get_adjacent_spaces(pos)) for pos in opposite_team_pieces])
 
-            available_spaces = all_adjacent - opposite_adjacent - own_team_pieces - opposite_team_pieces
+            available_spaces = own_adjacent - opposite_adjacent - own_team_pieces - opposite_team_pieces
 
             return list(available_spaces)
 
     @abstractmethod
     def allowed_movements(self, board):
         return NotImplemented('This should not be called')
+
+    def all_adjacent_pieces(self, board): #only for ants, doesn't include current piece
+        own = set(board.team_spaces[self.color])
+        own.remove(tuple(self.position))
+        opposite = set(board.team_spaces['black' if self.color == 'white' else 'white'])
+
+        own_adj = set().union(*[set(board.get_adjacent_spaces(pos)) for pos in own])
+        opposite_adj = set().union(*[set(board.get_adjacent_spaces(pos)) for pos in opposite])
+
+        all_adj = own_adj | opposite_adj
+        return list(set(all_adj))
 
 class Queen(Piece):
     def allowed_movements(self, board):
@@ -71,3 +82,25 @@ class Spider(Piece):
             if neighbor not in visited and board.is_valid_slide(position, neighbor):
                 self._dfs(board, neighbor, steps + 1, visited, valid_moves)
         visited.remove(position)
+
+class Grasshopper(Piece):
+    def allowed_movements(self, board):
+        valid_moves = []
+        adjacent_spaces = board.get_adjacent_spaces(self.position)
+        for space in adjacent_spaces:
+            if not board.is_empty(space):
+
+                while :
+                    space = board.get_adjacent_space(space)
+                valid_moves.append(space)
+        return valid_moves
+
+class Ant(Piece):
+    def allowed_movements(self, board):
+        valid_moves = []
+        all_adjacent = self.all_adjacent_pieces(board)
+        for space in all_adjacent:
+            if (board.is_empty(space) and
+                not board.breaks_hive(self.position, space)):
+                valid_moves.append(space)
+        return valid_moves
