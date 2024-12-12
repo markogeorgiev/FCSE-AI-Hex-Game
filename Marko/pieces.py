@@ -4,7 +4,7 @@ from copy import deepcopy
 
 class Piece:
     def __init__(self, name):
-        self.name = name  # (color + piece type) ex. WhiteBeetle1 ; queen will be Queen
+        self.name = name # (color + piece type) ex. WhiteBeetle1 ; queen will be Queen
         self.position = None
         self.color = 'white' if 'White' in self.name else 'black'
 
@@ -32,7 +32,7 @@ class Piece:
     def allowed_movements(self, board):
         return NotImplemented('This should not be called')
 
-    def all_adjacent_pieces(self, board):  # only for ants, doesn't include current piece
+    def all_adjacent_pieces(self, board): #only for ants, doesn't include current piece
         own = set(board.team_spaces[self.color])
         own.remove(tuple(self.position))
         opposite = set(board.team_spaces['black' if self.color == 'white' else 'white'])
@@ -43,18 +43,16 @@ class Piece:
         all_adj = own_adj | opposite_adj
         return list(set(all_adj))
 
-
 class Queen(Piece):
     def allowed_movements(self, board):
         adjacent_spaces = board.get_adjacent_spaces(self.position)
         valid_moves = []
         for space in adjacent_spaces:
             if (board.is_empty(space) and
-                    board.has_adjacent_piece(space) and
-                    not board.breaks_hive(self.position, space)):
+                board.has_adjacent_piece(space) and
+                not board.breaks_hive(self.position, space)):
                 valid_moves.append(space)
         return valid_moves
-
 
 class Beetle(Piece):
     def allowed_movements(self, board):
@@ -62,10 +60,9 @@ class Beetle(Piece):
         valid_moves = []
         for space in adjacent_spaces:
             if (board.has_adjacent_piece(space) and
-                    not board.breaks_hive(self.position, space)):
+                not board.breaks_hive(self.position, space)):
                 valid_moves.append(space)
         return valid_moves
-
 
 class Spider(Piece):
     def allowed_movements(self, board):
@@ -86,37 +83,17 @@ class Spider(Piece):
                 self._dfs(board, neighbor, steps + 1, visited, valid_moves)
         visited.remove(position)
 
-
 class Grasshopper(Piece):
     def allowed_movements(self, board):
         valid_moves = []
+        adjacent_spaces = board.get_adjacent_spaces(self.position)
+        for space in adjacent_spaces:
+            if not board.is_empty(space):
 
-        x, y = self.position
-        offsets_even = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 0), (0, -1)]
-        offsets_odd = [(0, -1), (-1, 0), (0, 1), (1, 1), (1, 0), (1, -1)]
-        offsets = []
-        if y % 2 == 0:
-            offsets = offsets_even
-        else:
-            offsets = offsets_odd
-
-        valid_neighbours_offsets = []
-
-        # When we move once for a piece,
-
-        for offset in offsets:
-            if not board.is_empty((x + offset[0], y + offset[1])):
-                valid_neighbours_offsets.append(offset)
-
-
-        for valid_offset in valid_neighbours_offsets:
-            start_offset = valid_offset
-            while not board.is_empty((x + valid_offset[0], y + valid_offset[1])):
-                valid_offset = (valid_offset[0] + start_offset[0], valid_offset[1] + start_offset[1])
-            valid_moves.append(valid_offset)
-
+                while :
+                    space = board.get_adjacent_space(space)
+                valid_moves.append(space)
         return valid_moves
-
 
 class Ant(Piece):
     def allowed_movements(self, board):
@@ -124,6 +101,6 @@ class Ant(Piece):
         all_adjacent = self.all_adjacent_pieces(board)
         for space in all_adjacent:
             if (board.is_empty(space) and
-                    not board.breaks_hive(self.position, space)):
+                not board.breaks_hive(self.position, space)):
                 valid_moves.append(space)
         return valid_moves
