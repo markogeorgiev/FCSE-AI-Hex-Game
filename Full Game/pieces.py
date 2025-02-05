@@ -6,7 +6,9 @@ from move_checker import axial_distance, move_is_not_blocked_or_jump, \
     path_exists, is_straight_line
 from settings import PIECE_WHITE
 
+
 class Piece:
+
     def __init__(self, color=PIECE_WHITE):
         self.old_pos = None
         self.color = color
@@ -18,11 +20,11 @@ class Piece:
         pass
 
     def __str__(self):
-        color_name = "White" if self.color == PIECE_WHITE else "Black"
-        position = self.old_pos if self.old_pos else "None"
-        return f"{color_name} {type(self).__name__}"
+        return f'{self.__class__.__name__}: {self.old_pos}'
+
 
 class Queen(Piece):
+
     def __init__(self, color=PIECE_WHITE):
         super().__init__(color)
 
@@ -42,7 +44,9 @@ class Queen(Piece):
         else:
             return False
 
+
 class Ant(Piece):
+
     def __init__(self, color=PIECE_WHITE):
         super().__init__(color)
 
@@ -78,6 +82,7 @@ class Spider(Piece):
             return False
 
 class Beetle(Piece):
+
     def __init__(self, color=PIECE_WHITE):
         super().__init__(color)
 
@@ -95,13 +100,15 @@ class Beetle(Piece):
                           new_tile) or new_tile.has_pieces()
                           or len(old_tile.pieces) > 1):
 
-            # can't slide into a blocked hex but it can go up or down into one
+            # can't slide into a blocked hex, but it can go up or down into one
 
             return True
         else:
             return False
 
+
 class Grasshopper(Piece):
+
     def __init__(self, color=PIECE_WHITE):
         super().__init__(color)
 

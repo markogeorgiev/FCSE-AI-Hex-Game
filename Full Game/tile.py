@@ -21,6 +21,9 @@ class Tile:
         else:
             self.pieces = []
 
+    def __str__(self):
+        return f'Tile:[{self.coords}]:-:Pieces: {[piece.__str__() for piece in self.pieces]}'
+
     def draw(self, surface, pos, clicked=False):
         if self.under_mouse(pos):
             if clicked:
@@ -38,13 +41,6 @@ class Tile:
             return True
         else:
             return False
-
-    def __str__(self):
-        if self.pieces:
-            pieces_str = ", ".join([str(p) for p in self.pieces])
-            return f"Hex tile with pieces: {pieces_str}"
-        else:
-            return "Hex tile with no pieces"
 
     def add_piece(self, piece):
         self.pieces.append(piece)
@@ -101,21 +97,17 @@ class Inventory_Tile(Tile):
     def __init__(self, coord_pair, axial_coords, radius, color, piece):
         super().__init__(coord_pair, axial_coords, radius, color, piece)
 
+    def __str__(self):
+        return super().__str__()
 
 class Start_Tile(Tile):
+
     def __init__(self, coord_pair, axial_coords, radius, color, piece):
         super().__init__(coord_pair, axial_coords, radius, BLUE, piece)
 
     def __str__(self):
-        coord_info = f"Axial: {self.axial_coords}"
-        radius_info = f"Radius: {self.radius}"
-        color_info = f"Color: {self.color}"
-        if self.pieces:
-            pieces_str = ", ".join([str(p) for p in self.pieces])
-            pieces_info = f"Pieces: {pieces_str}"
-        else:
-            pieces_info = "Pieces: None"
-        return f"Start Tile [{coord_info}, {pieces_info}]"
+        return super().__str__()
+
 
 def distance(pair_one, pair_two):
     (x1, y1) = pair_one

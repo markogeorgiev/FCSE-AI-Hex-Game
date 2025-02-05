@@ -16,7 +16,6 @@ from settings import BACKGROUND, WIDTH, HEIGHT
 
 
 def Hive():
-
     pg.font.init()
 
     # Create the screen
@@ -50,6 +49,7 @@ def Hive():
                 no_move_popup(screen, background, state, event)
 
         while state.main_loop:
+            print([piece.__str__() for piece in state.get_tiles_with_pieces()])
             pos = pg.mouse.get_pos()
             print(f'It\'s {state.turn} turn')
             for event in pg.event.get():

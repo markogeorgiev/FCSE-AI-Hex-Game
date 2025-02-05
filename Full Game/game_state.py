@@ -5,7 +5,7 @@ from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
 from settings import PIECE_WHITE, PIECE_BLACK
-
+from move_checker import move_obeys_queen_by_4
 
 class Game_State:
 
@@ -70,7 +70,8 @@ class Game_State:
     def close_popup(self):
         self.main_loop = True
         self.move_popup_loop = False
-        self.next_turn()
+        if move_obeys_queen_by_4(self):
+            self.next_turn()
 
     def add_moving_piece(self, piece):
         self.moving_piece = piece
