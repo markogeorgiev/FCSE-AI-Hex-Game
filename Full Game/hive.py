@@ -13,6 +13,7 @@ from game_state import Game_State
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
 from settings import BACKGROUND, WIDTH, HEIGHT
+from move_checker import move_obeys_queen_by_4
 
 
 def Hive():
@@ -41,12 +42,15 @@ def Hive():
                     break
                 start_menu(screen, state, event)
 
-        while state.move_popup_loop:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    state.quit()
-                    break
-                no_move_popup(screen, background, state, event)
+        if move_obeys_queen_by_4(state):
+            while state.move_popup_loop:
+                for event in pg.event.get():
+                    if event.type == pg.QUIT:
+                        state.quit()
+                        break
+                    no_move_popup(screen, background, state, event)
+        else:
+            state.close_popup()
 
         while state.main_loop:
             print([piece.__str__() for piece in state.get_tiles_with_pieces()])
