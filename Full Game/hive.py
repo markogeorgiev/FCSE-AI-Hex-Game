@@ -59,11 +59,14 @@ def Hive():
             # for tile in state.get_all_tiles():
             #     print(f'{tile.__str__()}')
             # print('==============================================\n\n\n\n\n\n\n\n\n\n')
-            for tile in state.get_tiles_with_pieces(include_inventory=False):
-                if tile.has_pieces():
-                    if tile.pieces[0].__class__.__name__ == 'Queen':
-                        for adj_tile in ai.get_adjacent_tiles(state, tile):
-                            print(f'{adj_tile.__str__()}')
+            if state.turn % 2 == 1:
+                ai.testing(state)
+                for tile in state.get_tiles_with_pieces(include_inventory=False):
+                    if tile.has_pieces():
+                        if tile.pieces[0].__class__.__name__ == 'Queen':
+                            for adj_tile in ai.generate_all_possible_moves(state):
+                                print(f'{adj_tile.__str__()}')
+                            print('==============================================\n\n\n\n\n\n\n\n\n\n')
             pos = pg.mouse.get_pos()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -79,21 +82,14 @@ def Hive():
                 if event.type == pg.MOUSEBUTTONUP:
                     state.unclick()
                     if state.moving_piece and state.is_player_turn():
-                        old_tile = next(tile for tile in
-                                state.board_tiles if tile.has_pieces()
-                                and tile.pieces[-1]
-                                == state.moving_piece)
-                        new_tile = next((tile for tile in
-                                state.board_tiles
-                                if tile.under_mouse(pos)), None)
+                        old_tile = next(tile for tile in state.board_tiles if tile.has_pieces() and tile.pieces[-1] == state.moving_piece)
+                        new_tile = next((tile for tile in state.board_tiles if tile.under_mouse(pos)), None)
                         if is_valid_move(state, old_tile, new_tile):
                             old_tile.move_piece(new_tile)
                             state.next_turn()
                             if player_has_no_moves(state):
                                 state.open_popup()
-
                     state.remove_moving_piece()
-            # only animate once each loop
 
             background.fill(BACKGROUND)
             white_inventory.draw(background, pos)

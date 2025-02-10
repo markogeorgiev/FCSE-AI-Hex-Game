@@ -20,7 +20,9 @@ class Piece:
         pass
 
     def __str__(self):
-        return f'{self.__class__.__name__}: {self.old_pos}'
+        if self.color == PIECE_WHITE:
+            return f'White {self.__class__.__name__}: {self.old_pos}'
+        return f'Black {self.__class__.__name__}: {self.old_pos}'
 
 
 class Queen(Piece):

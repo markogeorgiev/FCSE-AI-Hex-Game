@@ -8,15 +8,12 @@ from settings import PIECE_WHITE, PIECE_BLACK
 
 def is_valid_move(state, old_tile, new_tile):
     base_move_check = new_tile is not None and new_tile.coords \
-        != old_tile.coords and (not new_tile.has_pieces()
-                                or type(state.moving_piece)
-                                is pieces.Beetle)
-    full_move_check = base_move_check \
-        and new_tile.is_hive_adjacent(state) \
-        and move_does_not_break_hive(state, old_tile) \
-        and (placement_is_allowed(state, old_tile, new_tile)
-             or state.moving_piece.move_is_valid(state, old_tile,
-             new_tile))
+                      != old_tile.coords and (not new_tile.has_pieces() or (
+            type(state.moving_piece) is pieces.Beetle and state.turn != 3))
+    full_move_check = base_move_check and new_tile.is_hive_adjacent(state) and move_does_not_break_hive(state, old_tile) and (
+                              placement_is_allowed(state, old_tile, new_tile)
+                              or state.moving_piece.move_is_valid(state, old_tile,
+                                                                  new_tile))
     if state.turn == 1:
         if base_move_check and type(new_tile) is tile.Start_Tile:
             return True
@@ -68,7 +65,7 @@ def queen_is_on_board(state, old_tile):
         return True
     else:
 
-         # allow move if queen is down for that color
+        # allow move if queen is down for that color
 
         if state.turn % 2 == 1:
             color = PIECE_WHITE
@@ -92,22 +89,22 @@ def move_obeys_queen_by_4(state):
         return True
     elif len(queens_on_board) == 0:
         if state.turn == 7 and type(state.moving_piece) is pieces.Queen \
-            and state.moving_piece.color == PIECE_WHITE:
+                and state.moving_piece.color == PIECE_WHITE:
             return True
         elif state.turn == 8 and type(state.moving_piece) \
-            is pieces.Queen and state.moving_piece.color == PIECE_BLACK:
+                is pieces.Queen and state.moving_piece.color == PIECE_BLACK:
             return True
     elif len(queens_on_board) > 0:
         if queens_on_board[0].color == PIECE_WHITE and state.turn == 7:
             return True
         elif queens_on_board[0].color == PIECE_BLACK and state.turn \
-            == 7 and type(state.moving_piece) is pieces.Queen:
+                == 7 and type(state.moving_piece) is pieces.Queen:
             return True
         elif queens_on_board[0].color == PIECE_BLACK and state.turn \
-            == 8:
+                == 8:
             return True
         elif queens_on_board[0].color == PIECE_WHITE and state.turn \
-            == 8 and type(state.moving_piece) is pieces.Queen:
+                == 8 and type(state.moving_piece) is pieces.Queen:
             return True
 
     return False
@@ -121,7 +118,7 @@ def game_is_over(state):
         for piece in tile.pieces:
             if type(piece) is pieces.Queen:
                 adjacent_tiles_with_pieces = [x for x in
-                        tile.adjacent_tiles if x.has_pieces()]
+                                              tile.adjacent_tiles if x.has_pieces()]
                 if len(adjacent_tiles_with_pieces) == 6:
                     if piece.color == PIECE_WHITE:
                         white_surrounded = True
@@ -143,7 +140,7 @@ def game_is_over(state):
 def placement_is_allowed(state, old_tile, new_tile):
     if old_tile.axial_coords == (99, 99):
         new_tile_adjacents_with_pieces = [x for x in
-                new_tile.adjacent_tiles if x.has_pieces()]
+                                          new_tile.adjacent_tiles if x.has_pieces()]
         for tile in new_tile_adjacents_with_pieces:
 
             # placed pieces cannot touch other player's pieces to start
@@ -158,7 +155,7 @@ def axial_distance(one, two):
     (q1, r1) = one
     (q2, r2) = two
     return np.sqrt((q1 - q2) * (q1 - q2) + (r1 - r2) * (r1 - r2) + (q1
-                   - q2) * (r1 - r2))
+                                                                    - q2) * (r1 - r2))
 
 
 def move_is_not_blocked_or_jump(state, old_tile, new_tile):  # check for each pathfinding move
@@ -198,10 +195,10 @@ def path_exists(state, old_tile, new_tile, spider=False):
 
         for neighbor_tile in [x for x in current_tile.adjacent_tiles
                               if x.is_hive_adjacent(state)
-                              and not x.has_pieces()]:
+                                 and not x.has_pieces()]:
             if neighbor_tile not in path \
-                and move_is_not_blocked_or_jump(state, current_tile,
-                    neighbor_tile):
+                    and move_is_not_blocked_or_jump(state, current_tile,
+                                                    neighbor_tile):
                 new_path = list(path)
                 new_path.append(neighbor_tile)
                 queue.append(new_path)
@@ -232,7 +229,7 @@ def player_has_no_moves(state):
         hive_adjacent_tiles = tile.adjacent_tiles
         for HA_tile in hive_adjacent_tiles:
             if HA_tile not in open_adjacent_tiles \
-                and not HA_tile.has_pieces():
+                    and not HA_tile.has_pieces():
                 open_adjacent_tiles.append(HA_tile)
 
     for old_tile in player_piece_tiles:

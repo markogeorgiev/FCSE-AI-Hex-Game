@@ -1,5 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from xml.dom.pulldom import START_DOCUMENT
+
+from tile import Start_Tile
 from tile import Inventory_Tile
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 from inventory_frame import Inventory_Frame
@@ -123,3 +126,23 @@ class Game_State:
 
     def get_all_tiles(self):
         return [tile for tile in self.board_tiles]
+
+    def get_non_placed_piece(self, only_white=True):
+        inventory_tiles = self.get_tiles_in_inventory()
+        inventory_pieces = []
+        for tile in inventory_tiles:
+            for piece in tile.pieces:
+                if piece.color == PIECE_WHITE:
+                    inventory_pieces.append(piece)
+        return inventory_pieces
+
+    def get_start_tile(self):
+        for tile in self.board_tiles:
+            if type(tile) is Start_Tile:
+                return tile
+
+    def get_tile_by_piece(self, targe_piece):
+        for tile in self.get_tiles_with_pieces(include_inventory=True):
+            if targe_piece == tile.pieces[-1]:
+                return tile
+        return None
