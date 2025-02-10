@@ -5,6 +5,7 @@ import threading
 import pygame as pg
 
 import game_state
+import ai
 from tile import Tile, initialize_grid, draw_drag
 from move_checker import is_valid_move, game_is_over, \
     player_has_no_moves
@@ -53,9 +54,17 @@ def Hive():
             state.close_popup()
 
         while state.main_loop:
-            print([piece.__str__() for piece in state.get_tiles_with_pieces()])
+            #print([piece.__str__() for piece in state.get_tiles_with_pieces()])
+            #print([piece.__str__() for piece in state.get_tiles_in_inventory()])
+            # for tile in state.get_all_tiles():
+            #     print(f'{tile.__str__()}')
+            # print('==============================================\n\n\n\n\n\n\n\n\n\n')
+            for tile in state.get_tiles_with_pieces(include_inventory=False):
+                if tile.has_pieces():
+                    if tile.pieces[0].__class__.__name__ == 'Queen':
+                        for adj_tile in ai.get_adjacent_tiles(state, tile):
+                            print(f'{adj_tile.__str__()}')
             pos = pg.mouse.get_pos()
-            print(f'It\'s {state.turn} turn')
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     state.quit()
@@ -66,6 +75,7 @@ def Hive():
                         break
                 if event.type == pg.MOUSEBUTTONDOWN:
                     state.click()
+
                 if event.type == pg.MOUSEBUTTONUP:
                     state.unclick()
                     if state.moving_piece and state.is_player_turn():
@@ -88,11 +98,11 @@ def Hive():
             background.fill(BACKGROUND)
             white_inventory.draw(background, pos)
             black_inventory.draw(background, pos)
+
             for tile in state.board_tiles:
                 if state.clicked:
                     tile.draw(background, pos, state.clicked)
-                    if tile.under_mouse(pos) and state.moving_piece \
-                        is None and tile.has_pieces():
+                    if tile.under_mouse(pos) and state.moving_piece is None and tile.has_pieces():
                         state.add_moving_piece(tile.pieces[-1])
                 else:
                     tile.draw(background, pos)
@@ -104,10 +114,6 @@ def Hive():
 
             if game_is_over(state):
                 state.end_game()
-
-            if state.turn % 2 == 0:
-                print([str(tile) for tile in state.get_tiles_with_pieces()])
-                
 
             # AI will be here --
             #

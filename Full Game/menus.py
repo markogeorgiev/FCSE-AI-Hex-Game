@@ -42,7 +42,6 @@ class StartButton:
 
 
 def start_menu(screen, state, event):
-
     button_width = WIDTH / 4.5
     button_height = HEIGHT / 10
     button_pos = WIDTH / 2 - button_width / 2
@@ -97,8 +96,7 @@ def end_menu(screen, state, event):
     clear_surface = pg.Surface((WIDTH, HEIGHT))
     clear_surface.set_alpha(5)
     clear_surface.fill(WHITE)
-    buttons = [EndButton(NEWGAME, (WIDTH / 2, HEIGHT / 2)),
-               EndButton(QUIT, (WIDTH / 2, 0.65 * HEIGHT))]
+    buttons = [EndButton(NEWGAME, (WIDTH / 2, HEIGHT / 2)), EndButton(QUIT, (WIDTH / 2, 0.65 * HEIGHT))]
 
     title_font = pg.font.SysFont('Times New Norman', 120)
 
@@ -119,9 +117,7 @@ def end_menu(screen, state, event):
         button.draw(clear_surface)
 
     clear_surface.blit(wins, wins_rect)
-
     screen.blit(clear_surface, (0, 0))
-
     pg.display.flip()
 
 
@@ -142,27 +138,20 @@ def no_move_popup(screen, surface, state, event,):
 
     if state.turn % 2 == 1:
         no_move = popup_font.render('White has no moves', True, PURPLE)
-        turn_skipped = popup_font.render('White turn is skipped', True,
-                PURPLE)
+        turn_skipped = popup_font.render('White turn is skipped', True, PURPLE)
     else:
         no_move = popup_font.render('Black has no moves,', True, PURPLE)
-        turn_skipped = popup_font.render('Black turn is skipped', True,
-                PURPLE)
-    close = \
-        popup_font.render('Press the space bar to close this message',
+        turn_skipped = popup_font.render('Black turn is skipped', True, PURPLE)
+    close = popup_font.render('Press the space bar to close this message',
                           True, PURPLE)
 
     close.set_alpha(250)
     no_move.set_alpha(250)
     turn_skipped.set_alpha(250)
 
-    close_rect = close.get_rect(center=(window_width / 2, window_height
-                                / 2 + window_height / 4))
-    no_move_rect = no_move.get_rect(center=(window_width / 2,
-                                    window_height / 2 - window_height
-                                    / 3))
-    turn_skipped_rect = turn_skipped.get_rect(center=(window_width / 2,
-            window_height / 2 - window_height / 5))
+    close_rect = close.get_rect(center=(window_width / 2, window_height / 2 + window_height / 4))
+    no_move_rect = no_move.get_rect(center=(window_width / 2, window_height / 2 - window_height / 3))
+    turn_skipped_rect = turn_skipped.get_rect(center=(window_width / 2, window_height / 2 - window_height / 5))
 
     clear_surface.blit(no_move, no_move_rect)
     clear_surface.blit(turn_skipped, turn_skipped_rect)

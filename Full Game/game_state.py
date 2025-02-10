@@ -24,8 +24,7 @@ class Game_State:
 
         white_inventory = Inventory_Frame((0, 158), 0, white=True)
         black_inventory = Inventory_Frame((440, 158), 1, white=False)
-        self.board_tiles = tiles + white_inventory.tiles \
-            + black_inventory.tiles
+        self.board_tiles = tiles + white_inventory.tiles + black_inventory.tiles
 
         self.turn_panel = Turn_Panel()
 
@@ -92,11 +91,9 @@ class Game_State:
         self.turn += 1
 
     def is_player_turn(self):
-        if self.moving_piece.color == PIECE_WHITE and self.turn % 2 \
-            == 1:
+        if self.moving_piece.color == PIECE_WHITE and self.turn % 2 == 1:
             return True
-        elif self.moving_piece.color == PIECE_BLACK and self.turn % 2 \
-            == 0:
+        elif self.moving_piece.color == PIECE_BLACK and self.turn % 2 == 0:
             return True
         else:
             return False
@@ -110,3 +107,19 @@ class Game_State:
             elif tile.has_pieces() and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles
+
+    def get_tile(self, axial_coords):
+        for tile in self.board_tiles:
+            if tile.axial_coords == axial_coords:
+                return tile
+        return None
+
+    def get_tiles_in_inventory(self):
+        inventory_tiles = []
+        for tile in self.board_tiles:
+            if type(tile) is Inventory_Tile and tile.has_pieces():
+                inventory_tiles.append(tile)
+        return inventory_tiles
+
+    def get_all_tiles(self):
+        return [tile for tile in self.board_tiles]

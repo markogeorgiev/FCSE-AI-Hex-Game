@@ -22,7 +22,7 @@ class Tile:
             self.pieces = []
 
     def __str__(self):
-        return f'Tile:[{self.coords}]:-:Pieces: {[piece.__str__() for piece in self.pieces]}'
+        return f'Tile:[{self.axial_coords}]:-:Pieces: {[piece.__str__() for piece in self.pieces]}'
 
     def draw(self, surface, pos, clicked=False):
         if self.under_mouse(pos):
@@ -69,6 +69,9 @@ class Tile:
     def set_coords_inventory(self, coord_pair):
         self.coords = coord_pair
 
+    def get_axial_coords(self):
+        return self.axial_coords
+
     def is_hive_adjacent(self, state):
         for tile in self.adjacent_tiles:
             if tile.has_pieces():
@@ -88,7 +91,6 @@ class Tile:
                 (q - 1, r),
                 ]:
                 adjacent_tiles.append(tile)
-
         self.adjacent_tiles = adjacent_tiles
 
 
