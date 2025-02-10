@@ -101,12 +101,16 @@ class Game_State:
         else:
             return False
 
-    def get_tiles_with_pieces(self, include_inventory=False):
+    def get_tiles_with_pieces(self, include_inventory=False, only_white=False):
         tiles = []
         for tile in self.board_tiles:
             if include_inventory:
                 if tile.has_pieces():
-                    tiles.append(tile)
+                    if only_white:
+                        if tile.color == PIECE_WHITE:
+                            tiles.append(tile)
+                    else:
+                        tiles.append(tile)
             elif tile.has_pieces() and type(tile) is not Inventory_Tile:
                 tiles.append(tile)
         return tiles

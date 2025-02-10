@@ -24,15 +24,41 @@ def generate_all_possible_moves(state):
 
 
 def testing(state):
-    # 1. Choose a piece
+    # 50/50 Choice between placing a piece and moving it.
+    if random.random() > 0.5:
+    # 1. Place a piece
+        # i. Choose a piece
+        chosen_piece = random.choice(state.get_non_placed_piece())
+        # ii. Choose a tile to move to:
+        where_to_move = random.choice(get_available_to_place_tiles(state, no_black_neighbours_check=True))
+        # iii. Find the old tile
+        old_tile = state.get_tile_by_piece(chosen_piece)
+        # iv. Move piece form old to new Tile
+        old_tile.move_piece(where_to_move)
+        # v. Change turn
+        state.next_turn()
+    else:
+    # 2. Move a piece
+        # i. Choose a piece to move.
+
+        # ii. Choose where to move it to.
+        # iii. Find the old tile
+        # iv. Move form the old tile to new tile
+        # v. Change turn
+        ...
+
+    return None
+
+def testing_v1(state):
+    # i. Choose a piece
     chosen_piece = random.choice(state.get_non_placed_piece())
-    # 2. Choose a tile to move to:
+    # ii. Choose a tile to move to:
     where_to_move = random.choice(get_available_to_place_tiles(state, no_black_neighbours_check=True))
-    # 3. Find the old tile
+    # iii. Find the old tile
     old_tile = state.get_tile_by_piece(chosen_piece)
-    # 4. Move piece form old to new Tile
+    # iv. Move piece form old to new Tile
     old_tile.move_piece(where_to_move)
-    # 5. Change turn
+    # v. Change turn
     state.next_turn()
     return None
 
