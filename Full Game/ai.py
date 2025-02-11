@@ -10,7 +10,7 @@ def generate_all_possible_moves(state):
 
     # 1. All piece placement
     #       - Get all possible places where you can place a piece.
-    tiles_where_you_can_place = get_available_to_place_tiles(state)
+    tiles_where_you_can_place = state.get_available_to_place_tiles()
 
 
 
@@ -30,12 +30,12 @@ def testing(state):
     if random.random() > 0.5 or state.turn == 1:
     # 1. Place a piece
         # ii. Choose a tile to move to:
-        where_to_move = random.choice(get_available_to_place_tiles(state, no_black_neighbours_check=True))
+        where_to_move = random.choice(state.get_available_to_place_tiles( no_black_neighbours_check=True))
         # iii. Find the old tile
     else:
     # 2. Move a piece
         # ii. Choose where to move it to.
-        where_to_move = random.choice(get_available_to_place_tiles(state, no_black_neighbours_check=False))
+        where_to_move = random.choice(state.get_available_to_place_tiles( no_black_neighbours_check=False))
 
     # iii. Find the old tile
     old_tile = state.get_tile_by_piece(chosen_piece)
@@ -50,7 +50,7 @@ def testing_v1(state):
     # i. Choose a piece
     chosen_piece = random.choice(state.get_non_placed_piece())
     # ii. Choose a tile to move to:
-    where_to_move = random.choice(get_available_to_place_tiles(state, no_black_neighbours_check=True))
+    where_to_move = random.choice(state.get_available_to_place_tiles( no_black_neighbours_check=True))
     # iii. Find the old tile
     old_tile = state.get_tile_by_piece(chosen_piece)
     # iv. Move piece form old to new Tile
@@ -68,21 +68,7 @@ def all_adjacent_positions(state):
     ...
 
 
-def get_available_to_place_tiles(state, no_black_neighbours_check=False):
-    if state.turn == 1:
-        return [state.get_start_tile()]
 
-    tiles_with_piece = state.get_tiles_with_pieces(include_inventory=False)
-    free_adjacent_tiles = []
-    for tile in tiles_with_piece:
-        for adj_tile in state.get_adjacent_tiles(state, tile):
-            if not adj_tile.has_pieces() and adj_tile not in free_adjacent_tiles:
-                if no_black_neighbours_check:
-                    if no_black_neighbours(state, adj_tile):
-                        free_adjacent_tiles.append(adj_tile)
-                else:
-                    free_adjacent_tiles.append(adj_tile)
-    return free_adjacent_tiles
 
 def get_random_piece(state):
     move_not_place = random.choice([True, False])

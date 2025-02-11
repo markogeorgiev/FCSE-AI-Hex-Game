@@ -112,7 +112,7 @@ def Hive():
                 state.end_game()
 
             if len(state.get_tiles_with_pieces()) > 1:
-                print([tile.__str__() for tile in state.get_specific_piece('Queen', include_board=True).get_all_valid_moves(state)])
+                print([tile.__str__() for tile in state.get_specific_piece('Ant', include_board=True).get_all_valid_moves(state)])
             # AI will be here --
             #
             #    # 1. Generate all possible moves

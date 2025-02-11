@@ -37,7 +37,7 @@ def is_valid_move_v2(state, old_tile, new_tile):
                       != old_tile.coords and (not new_tile.has_pieces() or (
             type(state.moving_piece) is pieces.Beetle and state.turn != 3))
     full_move_check = base_move_check and new_tile.is_hive_adjacent(state) and move_does_not_break_hive(state, old_tile) and (
-                              placement_is_allowed(state, old_tile, new_tile)
+                              placement_is_allowed_v2(state, old_tile, new_tile)
                               or moving_piece.move_is_valid(state, old_tile,
                                                                   new_tile))
     if state.turn == 1:
@@ -175,6 +175,22 @@ def placement_is_allowed(state, old_tile, new_tile):
                 return False
         return True
     return False
+
+def placement_is_allowed_v2(state, old_tile, new_tile):
+    moving_piece = old_tile.pieces[-1]
+    if old_tile.axial_coords == (99, 99):
+        new_tile_adjacents_with_pieces = [x for x in
+                                          new_tile.adjacent_tiles if x.has_pieces()]
+        for tile in new_tile_adjacents_with_pieces:
+
+            # placed pieces cannot touch other player's pieces to start
+
+            if tile.pieces[-1].color != moving_piece.color:
+                return False
+        return True
+    return False
+
+
 
 
 def axial_distance(one, two):

@@ -8,7 +8,7 @@ from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
 from settings import PIECE_WHITE, PIECE_BLACK
-from move_checker import move_obeys_queen_by_4
+from move_checker import move_obeys_queen_by_4, no_black_neighbours
 from settings import directions
 
 class Game_State:
@@ -178,3 +178,19 @@ class Game_State:
                     if piece.__class__.__name__ == piece_name:
                         return piece
         return None
+
+    def get_available_to_place_tiles(self, no_black_neighbours_check=False):
+        if self.turn == 1:
+            return [self.get_start_tile()]
+
+        tiles_with_piece = self.get_tiles_with_pieces(include_inventory=False)
+        free_adjacent_tiles = []
+        for tile in tiles_with_piece:
+            for adj_tile in self.get_adjacent_tiles(self, tile):
+                if not adj_tile.has_pieces() and adj_tile not in free_adjacent_tiles:
+                    if no_black_neighbours_check:
+                        if no_black_neighbours(self, adj_tile):
+                            free_adjacent_tiles.append(adj_tile)
+                    else:
+                        free_adjacent_tiles.append(adj_tile)
+        return free_adjacent_tiles

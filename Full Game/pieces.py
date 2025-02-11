@@ -23,7 +23,13 @@ class Piece:
         pass
 
     def get_all_valid_moves(self, state):
-        pass
+        piece_tile = state.get_tile_by_piece(self)
+        valid_tiles = set()
+        for hive_member in state.get_tiles_with_pieces(include_inventory=True):
+            for adjacent_tile in state.get_adjacent_tiles(hive_member):
+                if is_valid_move_v2(state, piece_tile, adjacent_tile):
+                    valid_tiles.add(adjacent_tile)
+        return valid_tiles
 
     def __str__(self):
         if self.color == PIECE_WHITE:
