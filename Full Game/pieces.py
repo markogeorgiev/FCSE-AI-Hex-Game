@@ -5,9 +5,10 @@ import pygame as pg
 from move_checker import axial_distance, move_is_not_blocked_or_jump, \
     path_exists, is_straight_line, placement_is_allowed
 from settings import PIECE_WHITE
-from move_checker import no_black_neighbours, move_does_not_break_hive
+from move_checker import no_black_neighbours, move_does_not_break_hive, is_valid_move_v2
 # from tile import Inventory_Tile
 import tile
+
 
 class Piece:
 
@@ -54,18 +55,9 @@ class Queen(Piece):
     def get_all_valid_moves(self, state):
         piece_tile = state.get_tile_by_piece(self)
         valid_tiles = set()
-
-        if type(piece_tile) is tile.Inventory_Tile:
-            for possible_tile in state.get_adjacent_tiles(piece_tile):
-                if no_black_neighbours(state, possible_tile) \
-                        and not possible_tile.has_pieces():
-                    valid_tiles.add(possible_tile)
-        else:
-            if len(state.get_tiles_with_pieces) <
-            for possible_tile in state.get_adjacent_tiles(piece_tile):
-                if not possible_tile.has_pieces() \
-                    and move_does_not_break_hive(state, piece_tile):
-                    valid_tiles.add(possible_tile)
+        for possible_tile in state.get_adjacent_tiles(piece_tile):
+            if is_valid_move_v2(state, piece_tile, possible_tile):
+                valid_tiles.add(possible_tile)
         return valid_tiles
 
 

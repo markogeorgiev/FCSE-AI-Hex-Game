@@ -178,4 +178,3 @@ class Game_State:
                     if piece.__class__.__name__ == piece_name:
                         return piece
         return None
-

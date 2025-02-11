@@ -31,6 +31,32 @@ def is_valid_move(state, old_tile, new_tile):
         if full_move_check:
             return True
     return False
+def is_valid_move_v2(state, old_tile, new_tile):
+    moving_piece = old_tile.pieces[-1]
+    base_move_check = new_tile is not None and new_tile.coords \
+                      != old_tile.coords and (not new_tile.has_pieces() or (
+            type(state.moving_piece) is pieces.Beetle and state.turn != 3))
+    full_move_check = base_move_check and new_tile.is_hive_adjacent(state) and move_does_not_break_hive(state, old_tile) and (
+                              placement_is_allowed(state, old_tile, new_tile)
+                              or moving_piece.move_is_valid(state, old_tile,
+                                                                  new_tile))
+    if state.turn == 1:
+        if base_move_check and type(new_tile) is tile.Start_Tile:
+            return True
+    elif state.turn == 2:
+        if base_move_check and new_tile.is_hive_adjacent(state):
+            return True
+    elif state.turn <= 6 and state.turn >= 3:
+        if full_move_check and queen_is_on_board(state, old_tile):
+            return True
+    elif state.turn == 7 or state.turn == 8:
+
+        if full_move_check and move_obeys_queen_by_4(state):
+            return True
+    else:
+        if full_move_check:
+            return True
+    return False
 
 """Check if you can move the piece at all."""
 def move_does_not_break_hive(state, old_tile):
