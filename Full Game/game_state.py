@@ -9,6 +9,7 @@ from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
 from settings import PIECE_WHITE, PIECE_BLACK
 from move_checker import move_obeys_queen_by_4
+from settings import directions
 
 class Game_State:
 
@@ -145,8 +146,36 @@ class Game_State:
             if type(tile) is Start_Tile:
                 return tile
 
+    def get_adjacent_tiles(self, tile):
+        current_tile_axial_coords = tile.get_axial_coords()
+        adjacent_tiles = []
+        for direction in directions:
+            potential = self.get_tile(
+                (current_tile_axial_coords[0] + direction[0], current_tile_axial_coords[1] + direction[1]))
+            if potential is not None:
+                adjacent_tiles.append(potential)
+        return adjacent_tiles
+
     def get_tile_by_piece(self, targe_piece):
         for tile in self.get_tiles_with_pieces(include_inventory=True):
             if targe_piece == tile.pieces[-1]:
                 return tile
         return None
+
+    def queen_check(self):
+        if self.turn <=6:
+            return True
+        if 'Queen' in [piece.__class__.__name__ for piece in self.get_non_placed_piece(only_white=True)]:
+            return False
+
+    def get_specific_piece(self, piece_name='Queen', include_board=False):
+        tiles_to_look = self.get_tiles_in_inventory()
+        if include_board:
+            tiles_to_look += self.get_tiles_with_pieces(include_inventory=False)
+        for tile in tiles_to_look:
+            for piece in tile.pieces:
+                if piece.color == PIECE_WHITE:
+                    if piece.__class__.__name__ == piece_name:
+                        return piece
+        return None
+

@@ -59,14 +59,14 @@ def Hive():
             # for tile in state.get_all_tiles():
             #     print(f'{tile.__str__()}')
             # print('==============================================\n\n\n\n\n\n\n\n\n\n')
-            if state.turn % 2 == 1:
-                ai.testing(state)
-                for tile in state.get_tiles_with_pieces(include_inventory=False):
-                    if tile.has_pieces():
-                        if tile.pieces[0].__class__.__name__ == 'Queen':
-                            for adj_tile in ai.generate_all_possible_moves(state):
-                                print(f'{adj_tile.__str__()}')
-                            print('==============================================\n\n\n\n\n\n\n\n\n\n')
+            # if state.turn % 2 == 1:
+            #     ai.testing(state)
+            #     for tile in state.get_tiles_with_pieces(include_inventory=False):
+            #         if tile.has_pieces():
+            #             if tile.pieces[0].__class__.__name__ == 'Queen':
+            #                 for adj_tile in ai.generate_all_possible_moves(state):
+            #                     print(f'{adj_tile.__str__()}')
+            #                 print('==============================================\n\n\n\n\n\n\n\n\n\n')
             pos = pg.mouse.get_pos()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -111,6 +111,8 @@ def Hive():
             if game_is_over(state):
                 state.end_game()
 
+            if len(state.get_tiles_with_pieces()) > 1:
+                print([tile.__str__() for tile in state.get_specific_piece('Queen', include_board=True).get_all_valid_moves(state)])
             # AI will be here --
             #
             #    # 1. Generate all possible moves

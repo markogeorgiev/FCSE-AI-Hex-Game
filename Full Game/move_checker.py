@@ -32,7 +32,7 @@ def is_valid_move(state, old_tile, new_tile):
             return True
     return False
 
-
+"""Check if you can move the piece at all."""
 def move_does_not_break_hive(state, old_tile):
     temp_piece = old_tile.pieces[-1]
     old_tile.remove_piece()
@@ -136,7 +136,7 @@ def game_is_over(state):
     else:
         return False
 
-
+"""Checks if you can place the piece from your inventory to the board."""
 def placement_is_allowed(state, old_tile, new_tile):
     if old_tile.axial_coords == (99, 99):
         new_tile_adjacents_with_pieces = [x for x in
@@ -237,4 +237,11 @@ def player_has_no_moves(state):
             if is_valid_move(state, old_tile, new_tile):
                 return False
 
+    return True
+
+def no_black_neighbours(state, tile):
+    adjacent_tiles = state.get_adjacent_tiles(tile)
+    for adj_tile in adjacent_tiles:
+        if adj_tile.color == (71, 71, 71):
+            return False
     return True

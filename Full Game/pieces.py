@@ -3,9 +3,11 @@
 import numpy as np
 import pygame as pg
 from move_checker import axial_distance, move_is_not_blocked_or_jump, \
-    path_exists, is_straight_line
+    path_exists, is_straight_line, placement_is_allowed
 from settings import PIECE_WHITE
-
+from move_checker import no_black_neighbours, move_does_not_break_hive
+# from tile import Inventory_Tile
+import tile
 
 class Piece:
 
@@ -17,6 +19,9 @@ class Piece:
         self.old_pos = pos
 
     def move_is_valid(self, state, old_tile, new_tile):
+        pass
+
+    def get_all_valid_moves(self, state):
         pass
 
     def __str__(self):
@@ -41,10 +46,27 @@ class Queen(Piece):
         dist = axial_distance(old_tile.axial_coords,
                               new_tile.axial_coords)
         if dist == 1 and move_is_not_blocked_or_jump(state, old_tile,
-                new_tile):
+                                                     new_tile):
             return True
         else:
             return False
+
+    def get_all_valid_moves(self, state):
+        piece_tile = state.get_tile_by_piece(self)
+        valid_tiles = set()
+
+        if type(piece_tile) is tile.Inventory_Tile:
+            for possible_tile in state.get_adjacent_tiles(piece_tile):
+                if no_black_neighbours(state, possible_tile) \
+                        and not possible_tile.has_pieces():
+                    valid_tiles.add(possible_tile)
+        else:
+            if len(state.get_tiles_with_pieces) <
+            for possible_tile in state.get_adjacent_tiles(piece_tile):
+                if not possible_tile.has_pieces() \
+                    and move_does_not_break_hive(state, piece_tile):
+                    valid_tiles.add(possible_tile)
+        return valid_tiles
 
 
 class Ant(Piece):
@@ -65,6 +87,7 @@ class Ant(Piece):
         else:
             return False
 
+
 class Spider(Piece):
     def __init__(self, color=PIECE_WHITE):
         super().__init__(color)
@@ -78,10 +101,11 @@ class Spider(Piece):
 
     def move_is_valid(self, state, old_tile, new_tile):
         if path_exists(state, old_tile, new_tile, spider=True) \
-            and move_is_not_blocked_or_jump(state, old_tile, new_tile):
+                and move_is_not_blocked_or_jump(state, old_tile, new_tile):
             return True
         else:
             return False
+
 
 class Beetle(Piece):
 
@@ -99,7 +123,7 @@ class Beetle(Piece):
         dist = axial_distance(old_tile.axial_coords,
                               new_tile.axial_coords)
         if dist == 1 and (move_is_not_blocked_or_jump(state, old_tile,
-                          new_tile) or new_tile.has_pieces()
+                                                      new_tile) or new_tile.has_pieces()
                           or len(old_tile.pieces) > 1):
 
             # can't slide into a blocked hex, but it can go up or down into one
@@ -134,9 +158,9 @@ class Grasshopper(Piece):
             while queue and new_tile not in visited:
                 current_tile = queue.pop(0)
                 for neighbor_tile in [x for x in
-                        current_tile.adjacent_tiles if x.has_pieces()
-                        and is_straight_line(old_tile.axial_coords,
-                        x.axial_coords)]:
+                                      current_tile.adjacent_tiles if x.has_pieces()
+                                                                     and is_straight_line(old_tile.axial_coords,
+                                                                                          x.axial_coords)]:
                     if neighbor_tile not in visited:
                         visited.append(neighbor_tile)
                         queue.append(neighbor_tile)
@@ -144,10 +168,10 @@ class Grasshopper(Piece):
             # have to check last tile seperately bc it will never have a piece
 
             for penultimate_tile in [x for x in new_tile.adjacent_tiles
-                    if x.has_pieces()]:
+                                     if x.has_pieces()]:
                 if penultimate_tile in visited \
-                    and is_straight_line(old_tile.axial_coords,
-                        new_tile.axial_coords):
+                        and is_straight_line(old_tile.axial_coords,
+                                             new_tile.axial_coords):
                     return True
         else:
             return False
