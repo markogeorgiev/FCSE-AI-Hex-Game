@@ -25,6 +25,8 @@ class Piece:
     def get_all_valid_moves(self, state):
         piece_tile = state.get_tile_by_piece(self)
         valid_tiles = set()
+        if len(state.get_tiles_with_pieces(include_inventory=False)) == 0:
+            valid_tiles.add(state.get_start_tile())
         for hive_member in state.get_tiles_with_pieces(include_inventory=True):
             for adjacent_tile in state.get_adjacent_tiles(hive_member):
                 if is_valid_move_v2(state, piece_tile, adjacent_tile):
@@ -58,13 +60,13 @@ class Queen(Piece):
         else:
             return False
 
-    def get_all_valid_moves(self, state):
-        piece_tile = state.get_tile_by_piece(self)
-        valid_tiles = set()
-        for possible_tile in state.get_adjacent_tiles(piece_tile):
-            if is_valid_move_v2(state, piece_tile, possible_tile):
-                valid_tiles.add(possible_tile)
-        return valid_tiles
+#   def get_all_valid_moves(self, state):
+#       piece_tile = state.get_tile_by_piece(self)
+#       valid_tiles = set()
+#       for possible_tile in state.get_adjacent_tiles(piece_tile):
+#           if is_valid_move_v2(state, piece_tile, possible_tile):
+#               valid_tiles.add(possible_tile)
+#       return valid_tiles
 
 
 class Ant(Piece):

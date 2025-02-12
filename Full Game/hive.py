@@ -67,6 +67,9 @@ def Hive():
             #                 for adj_tile in ai.generate_all_possible_moves(state):
             #                     print(f'{adj_tile.__str__()}')
             #                 print('==============================================\n\n\n\n\n\n\n\n\n\n')
+            if state.turn % 2 == 1:
+                ai.testing(state)
+
             pos = pg.mouse.get_pos()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -111,21 +114,6 @@ def Hive():
             if game_is_over(state):
                 state.end_game()
 
-            if len(state.get_tiles_with_pieces()) > 1:
-                print([tile.__str__() for tile in state.get_specific_piece('Ant', include_board=True).get_all_valid_moves(state)])
-            # AI will be here --
-            #
-            #    # 1. Generate all possible moves
-            #    #   1.1. Get all pieces
-            #    my_pieces = state.get_tiles_with_pieces()
-            #    print(my_pieces)
-            #    # 2. Choose best move
-            #
-            #
-            #
-            #    state.turn += 1
-            #    # x. Loop continues and page should refresh.
-            #    ...
 
 
         while state.end_loop:
@@ -135,7 +123,6 @@ def Hive():
                     state.quit()
                     break
     return state.play_new_game
-
 
 def main():
     run_game = True

@@ -51,7 +51,7 @@ def is_valid_move_v2(state, old_tile, new_tile):
             return True
     elif state.turn == 7 or state.turn == 8:
 
-        if full_move_check and move_obeys_queen_by_4(state):
+        if full_move_check:
             return True
     else:
         if full_move_check:

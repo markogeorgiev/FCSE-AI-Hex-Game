@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 from xml.dom.pulldom import START_DOCUMENT
 
-from tile import Start_Tile
-from tile import Inventory_Tile
+from tile import Inventory_Tile,Start_Tile
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
@@ -113,8 +112,17 @@ class Game_State:
                     else:
                         tiles.append(tile)
             elif tile.has_pieces() and type(tile) is not Inventory_Tile:
-                tiles.append(tile)
+                if only_white:
+                    if tile.color == PIECE_WHITE:
+                        tiles.append(tile)
+                else:
+                    tiles.append(tile)
         return tiles
+
+    def get_start_tile(self):
+        for tile in self.board_tiles:
+            if isinstance(tile, Start_Tile):
+                return tile
 
     def get_tile(self, axial_coords):
         for tile in self.board_tiles:
@@ -162,11 +170,10 @@ class Game_State:
                 return tile
         return None
 
-    def queen_check(self):
-        if self.turn <=6:
+    def queen_not_placed(self):
+        if 'Queen' not in [piece.__class__.__name__ for piece in self.get_non_placed_piece(only_white=True)]:
             return True
-        if 'Queen' in [piece.__class__.__name__ for piece in self.get_non_placed_piece(only_white=True)]:
-            return False
+        return False
 
     def get_specific_piece(self, piece_name='Queen', include_board=False):
         tiles_to_look = self.get_tiles_in_inventory()
@@ -186,7 +193,7 @@ class Game_State:
         tiles_with_piece = self.get_tiles_with_pieces(include_inventory=False)
         free_adjacent_tiles = []
         for tile in tiles_with_piece:
-            for adj_tile in self.get_adjacent_tiles(self, tile):
+            for adj_tile in self.get_adjacent_tiles(tile):
                 if not adj_tile.has_pieces() and adj_tile not in free_adjacent_tiles:
                     if no_black_neighbours_check:
                         if no_black_neighbours(self, adj_tile):
