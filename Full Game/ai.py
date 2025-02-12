@@ -1,3 +1,5 @@
+from traceback import print_tb
+
 import game_state
 import move_checker
 from settings import directions, WHITE, BLACK
@@ -23,6 +25,25 @@ def generate_all_possible_moves(state):
 
 
 def testing(state):
+    """This version of the ai.testing() function can get all possible moves for every piece, which has a valid move for that state."""
+    can_be_moved = get_pieces_which_can_be_moved(state)
+    print([curr_piece.__str__() for curr_piece in can_be_moved])
+    for moveable_piece in can_be_moved:
+        for valid_move in moveable_piece.get_all_valid_moves(state):
+            print(f'{moveable_piece.__str__()} can move to {valid_move.__str__()}')
+    return None
+
+def get_pieces_which_can_be_moved(state):
+    moveable_pieces = []
+    if state.turn == 7 and state.queen_not_placed():
+        moveable_pieces.append(state.get_specific_piece(include_board=True, piece_name='Queen'))
+    if state.turn <= 6:
+        [moveable_pieces.append(curr_piece) for curr_piece in state.get_non_placed_piece(only_white=True)]
+    else:
+        [moveable_pieces.append(curr_piece) for curr_piece in state.get_tiles_with_pieces(include_inventory=True, only_white=True)]
+    return moveable_pieces
+
+def testing_v2(state):
     # 50/50 Choice between placing a piece and moving it.
     chosen_piece = get_random_piece(state)
     possible_moves = list(chosen_piece.get_all_valid_moves(state))
