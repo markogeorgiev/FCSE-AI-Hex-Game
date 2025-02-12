@@ -45,8 +45,7 @@ class Queen(Piece):
         super().__init__(color)
 
     def draw(self, surface, hex_pos):
-        image = \
-            pg.image.load('images/{}.png'.format(type(self).__name__))
+        image = pg.image.load('images/{}.png'.format(type(self).__name__))
         (x, y) = hex_pos
         pos = (x - 16, y - 14)
         surface.blit(image, pos)

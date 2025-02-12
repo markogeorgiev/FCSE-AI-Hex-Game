@@ -6,9 +6,9 @@ from tile import Inventory_Tile,Start_Tile
 from pieces import Queen, Grasshopper, Spider, Beetle, Ant
 from inventory_frame import Inventory_Frame
 from turn_panel import Turn_Panel
-from settings import PIECE_WHITE, PIECE_BLACK
+from settings import PIECE_WHITE, PIECE_BLACK, directions, WHITE
 from move_checker import move_obeys_queen_by_4, no_black_neighbours
-from settings import directions
+
 
 class Game_State:
 
@@ -144,9 +144,8 @@ class Game_State:
         inventory_tiles = self.get_tiles_in_inventory()
         inventory_pieces = []
         for tile in inventory_tiles:
-            for piece in tile.pieces:
-                if piece.color == PIECE_WHITE:
-                    inventory_pieces.append(piece)
+            if tile.color == PIECE_WHITE:
+                    inventory_pieces.append(tile.pieces[-1])
         return inventory_pieces
 
     def get_start_tile(self):
@@ -171,7 +170,7 @@ class Game_State:
         return None
 
     def queen_not_placed(self):
-        if 'Queen' not in [piece.__class__.__name__ for piece in self.get_non_placed_piece(only_white=True)]:
+        if 'Queen' in [piece.__class__.__name__ for piece in self.get_non_placed_piece(only_white=True)]:
             return True
         return False
 

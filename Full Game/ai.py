@@ -26,16 +26,19 @@ def testing(state):
     # 50/50 Choice between placing a piece and moving it.
     chosen_piece = get_random_piece(state)
     possible_moves = list(chosen_piece.get_all_valid_moves(state))
-    print(chosen_piece.__str__())
     checked_pieces = set()
+    counter = 0
     checked_pieces.add(chosen_piece)
     while len(possible_moves) == 0:
         chosen_piece = get_random_piece(state)
         possible_moves = list(chosen_piece.get_all_valid_moves(state))
-        print(possible_move.__str__() for possible_move in possible_moves)
         checked_pieces.add(chosen_piece)
         if len(checked_pieces) == 11:
             state.next_turn()
+            return None
+        if counter > 0:
+            print(f'Stuck: {chosen_piece.__str__()}')
+    print(chosen_piece.__str__())
     where_to_move = random.choice(possible_moves)
     # iii. Find the old tile
     old_tile = state.get_tile_by_piece(chosen_piece)
@@ -43,6 +46,7 @@ def testing(state):
     old_tile.move_piece(where_to_move)
     # v. Change turn
     state.next_turn()
+    print(state.queen_not_placed())
     return None
 
 
@@ -67,8 +71,6 @@ def testing_v1(state):
 def get_random_piece(state):
     # move_not_place = random.choice([True, False])
     # It's either a queen or movement.
-    if state.turn == 3:
-        return state.get_specific_piece(include_board=True, piece_name='Queen')
     if state.turn == 7 and state.queen_not_placed():
         return state.get_specific_piece(include_board=True, piece_name='Queen')
     elif state.turn <= 6:

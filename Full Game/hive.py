@@ -81,7 +81,6 @@ def Hive():
                         break
                 if event.type == pg.MOUSEBUTTONDOWN:
                     state.click()
-
                 if event.type == pg.MOUSEBUTTONUP:
                     state.unclick()
                     if state.moving_piece and state.is_player_turn():
@@ -113,8 +112,6 @@ def Hive():
 
             if game_is_over(state):
                 state.end_game()
-
-
 
         while state.end_loop:
             end_menu(screen, state, event)  # drawing takes precedence over the close window button
