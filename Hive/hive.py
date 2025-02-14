@@ -67,7 +67,9 @@ def Hive():
             #                 for adj_tile in ai.generate_all_possible_moves(state):
             #                     print(f'{adj_tile.__str__()}')
             #                 print('==============================================\n\n\n\n\n\n\n\n\n\n')
+            
             if state.turn % 2 == 1:
+                ai.choose_best_move(state)
                 ai.testing(state)
 
             pos = pg.mouse.get_pos()

@@ -5,7 +5,7 @@ import move_checker
 from settings import directions, WHITE, BLACK
 import random
 from move_checker import no_black_neighbours
-
+from mcts import monte_carlo_tree_search
 
 def generate_all_possible_moves(state):
     possible_placement_tiles = []
@@ -32,6 +32,18 @@ def testing(state):
         for valid_move in moveable_piece.get_all_valid_moves(state):
             print(f'{moveable_piece.__str__()} can move to {valid_move.__str__()}')
     return None
+
+def choose_best_move(state):
+    possible_moves = []
+    for moveable_piece in get_pieces_which_can_be_moved(state):
+        for valid_move in moveable_piece.get_all_valid_moves(state):
+            possible_moves.append((moveable_piece, valid_move))
+
+    if not possible_moves:
+        return None  # No moves available
+
+    return monte_carlo_tree_search(state, possible_moves)
+
 
 def get_pieces_which_can_be_moved(state):
     moveable_pieces = []
