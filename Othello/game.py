@@ -1,8 +1,9 @@
 import pygame
 import sys
-from tkinter import Tk, StringVar
+import tkinter as tk
 from tkinter import ttk
 from copy import deepcopy
+import random
 
 pygame.init()
 
@@ -19,8 +20,8 @@ GRAY = (128, 128, 128)
 
 
 def choose_ai_algorithm():
-    root = Tk()
-    root.title("Choose your AI opponent")
+    root = tk.Tk()
+    root.title("Choose Mode")
 
     window_width = 300
     window_height = 200
@@ -30,19 +31,24 @@ def choose_ai_algorithm():
     y = (screen_height / 2) - (window_height / 2)
     root.geometry(f'{window_width}x{window_height}+{int(x)}+{int(y)}')
 
-    selected_algorithm = StringVar(value="minimax")
+    selected_algorithm = tk.StringVar(value="minimax")
 
-    label = ttk.Label(root, text="Select AI Algorithm:", font=('Arial', 12))
+    label = ttk.Label(root, text="Select Game Mode:", font=('Arial', 12))
     label.pack(pady=10)
 
-    minimax_radio = ttk.Radiobutton(root, text="Minimax", variable=selected_algorithm, value="minimax")
+    minimax_radio = ttk.Radiobutton(root, text="Human vs Minimax", variable=selected_algorithm, value="minimax")
     minimax_radio.pack()
 
-    expectimax_radio = ttk.Radiobutton(root, text="Expectimax", variable=selected_algorithm, value="expectimax")
+    expectimax_radio = ttk.Radiobutton(root, text="Human vs Expectimax", variable=selected_algorithm,
+                                       value="expectimax")
     expectimax_radio.pack()
 
-    greedy_radio = ttk.Radiobutton(root, text="Greedy", variable=selected_algorithm, value="greedy")
+    greedy_radio = ttk.Radiobutton(root, text="Human vs Greedy", variable=selected_algorithm, value="greedy")
     greedy_radio.pack()
+
+    ai_vs_ai_radio = ttk.Radiobutton(root, text="Minimax vs Expectimax (10 Rounds)",
+                                     variable=selected_algorithm, value="minimax_vs_expectimax")
+    ai_vs_ai_radio.pack()
 
     def on_select():
         root.quit()
@@ -57,18 +63,18 @@ def choose_ai_algorithm():
 
 
 def show_turn_passed_message(current_player):
-    root = Tk()
+    root = tk.Tk()
     root.title("Turn Passed")
 
     window_width = 300
-    window_height = 150
+    window_height = 100
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     x = (screen_width / 2) - (window_width / 2)
     y = (screen_height / 2) - (window_height / 2)
     root.geometry(f'{window_width}x{window_height}+{int(x)}+{int(y)}')
 
-    label = ttk.Label(root, text=f"{current_player} is out of valid moves. Turn passed to {'AI' if current_player == 'Human' else 'Human'}.", font=('Arial', 12))
+    label = ttk.Label(root, text=f"{current_player} has no moves. Turn passed.", font=('Arial', 12))
     label.pack(pady=20)
 
     def on_ok():
@@ -100,6 +106,67 @@ class OthelloGame:
             [-20, -30, -5, -5, -5, -5, -30, -20],
             [100, -20, 10, 5, 5, 10, -20, 100],
         ]
+
+    def evaluate_minimax(self, board, player):
+        opponent = 'W' if player == 'B' else 'B'
+
+        positional = 0
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                if board[i][j] == player:
+                    positional += self.WEIGHTS[i][j] * 1.5
+                elif board[i][j] == opponent:
+                    positional -= self.WEIGHTS[i][j]
+
+        corners = [(0, 0), (0, 7), (7, 0), (7, 7)]
+        corner_value = 0
+        for (i, j) in corners:
+            if board[i][j] == player:
+                corner_value += 25
+            elif board[i][j] == opponent:
+                corner_value -= 25
+
+        return positional + corner_value
+
+    def evaluate_expectimax(self, board, player):
+        opponent = 'W' if player == 'B' else 'B'
+
+        positional = 0
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                if board[i][j] == player:
+                    positional += self.WEIGHTS[i][j]
+                elif board[i][j] == opponent:
+                    positional -= self.WEIGHTS[i][j] * 0.8
+
+        player_moves = len(self.get_valid_moves(board, player))
+        opponent_moves = len(self.get_valid_moves(board, opponent))
+        mobility = (player_moves - opponent_moves) * 3
+
+        edge_penalty = 0
+        for i in [1, 6]:
+            for j in [1, 6]:
+                if board[i][j] == player:
+                    edge_penalty -= 15
+
+        return positional + mobility + edge_penalty
+
+    def greedy(self, board, player):
+        """Chooses the move that flips the most pieces."""
+        best_move = None
+        max_flips = -1
+
+        valid_moves = self.get_valid_moves(board, player)
+        for move in valid_moves:
+            new_board = deepcopy(board)
+            self.make_move(new_board, move[0], move[1], player)
+            flipped_count = sum(row.count(player) for row in new_board) - sum(row.count(player) for row in board)
+
+            if flipped_count > max_flips:
+                max_flips = flipped_count
+                best_move = move
+
+        return best_move
 
     def get_valid_moves(self, board, player):
         valid_moves = []
@@ -158,30 +225,14 @@ class OthelloGame:
 
         return True
 
-    def evaluate_board(self, board, player):
-        opponent = 'W' if player == 'B' else 'B'
-        positional = 0
-        for i in range(BOARD_SIZE):
-            for j in range(BOARD_SIZE):
-                if board[i][j] == player:
-                    positional += self.WEIGHTS[i][j]
-                elif board[i][j] == opponent:
-                    positional -= self.WEIGHTS[i][j]
-
-        player_moves = len(self.get_valid_moves(board, player))
-        opponent_moves = len(self.get_valid_moves(board, opponent))
-        mobility = player_moves - opponent_moves
-
-        return positional + 2 * mobility
-
     def minimax(self, board, depth, alpha, beta, maximizing_player):
         if depth == 0:
-            return self.evaluate_board(board, 'B' if maximizing_player else 'W'), None
+            return self.evaluate_minimax(board, 'B' if maximizing_player else 'W'), None
 
         current_player = 'B' if maximizing_player else 'W'
         valid_moves = self.get_valid_moves(board, current_player)
         if not valid_moves:
-            return self.evaluate_board(board, current_player), None
+            return self.evaluate_minimax(board, current_player), None
 
         best_move = None
         if maximizing_player:
@@ -213,12 +264,12 @@ class OthelloGame:
 
     def expectimax(self, board, depth, maximizing_player):
         if depth == 0:
-            return self.evaluate_board(board, 'B' if maximizing_player else 'W'), None
+            return self.evaluate_expectimax(board, 'B' if maximizing_player else 'W'), None
 
         current_player = 'B' if maximizing_player else 'W'
         valid_moves = self.get_valid_moves(board, current_player)
         if not valid_moves:
-            return self.evaluate_board(board, current_player), None
+            return self.evaluate_expectimax(board, current_player), None
 
         best_move = None
         if maximizing_player:
@@ -242,29 +293,17 @@ class OthelloGame:
             avg_eval = total_eval / move_count if move_count != 0 else 0
             return avg_eval, valid_moves[0] if valid_moves else None
 
-    def greedy(self, board, player):
-        """Chooses the move that flips the most pieces."""
-        best_move = None
-        max_flips = -1
-
-        valid_moves = self.get_valid_moves(board, player)
-        for move in valid_moves:
-            new_board = deepcopy(board)
-            self.make_move(new_board, move[0], move[1], player)
-            flipped_count = sum(row.count(player) for row in new_board) - sum(row.count(player) for row in board)
-
-            if flipped_count > max_flips:
-                max_flips = flipped_count
-                best_move = move
-
-        return best_move
-
     def get_ai_move(self):
-        if self.ai_algorithm == "minimax":
+        if self.ai_algorithm == "minimax_vs_expectimax":
+            if self.current_player == 'B':
+                _, move = self.minimax(self.board, 6, float('-inf'), float('inf'), True)
+            else:
+                _, move = self.expectimax(self.board, 5, False)
+        elif self.ai_algorithm == "minimax":
             _, move = self.minimax(self.board, 5, float('-inf'), float('inf'), False)
         elif self.ai_algorithm == "expectimax":
             _, move = self.expectimax(self.board, 4, False)
-        else:  # Greedy algorithm
+        elif self.ai_algorithm == "greedy":
             move = self.greedy(self.board, 'W')
         return move
 
@@ -291,9 +330,9 @@ class OthelloGame:
             white_count = sum(row.count('W') for row in self.board)
 
             if black_count > white_count:
-                self.winner = "Human"
+                self.winner = "Human" if self.ai_algorithm != "minimax_vs_expectimax" else "Minimax"
             elif white_count > black_count:
-                self.winner = "AI"
+                self.winner = "AI" if self.ai_algorithm != "minimax_vs_expectimax" else "Expectimax"
             else:
                 self.winner = "Draw"
             return True
@@ -303,53 +342,120 @@ class OthelloGame:
 def main():
     ai_algorithm = choose_ai_algorithm()
 
-    game = OthelloGame(ai_algorithm)
+    human_wins = 0
+    ai_wins = 0
+    minimax_wins = 0
+    expectimax_wins = 0
+    rounds_played = 0
+    total_rounds = 10 if ai_algorithm == "minimax_vs_expectimax" else 1
+
     clock = pygame.time.Clock()
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+    while rounds_played < total_rounds:
+        game = OthelloGame(ai_algorithm)
+        game_over = False
 
-            if not game.game_over and event.type == pygame.MOUSEBUTTONDOWN and game.current_player == 'B':
-                x, y = event.pos
-                row = y // SQUARE_SIZE
-                col = x // SQUARE_SIZE
-                if game.make_move(game.board, row, col, 'B'):
-                    game.current_player = 'W'
+        while not game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                if ai_algorithm in ["minimax", "expectimax", "greedy"]:
+                    if not game.game_over and event.type == pygame.MOUSEBUTTONDOWN and game.current_player == 'B':
+                        x, y = event.pos
+                        row = y // SQUARE_SIZE
+                        col = x // SQUARE_SIZE
+                        if game.make_move(game.board, row, col, 'B'):
+                            game.current_player = 'W'
+                            game.game_over = game.check_game_over()
+
+            if not game.game_over:
+                if ai_algorithm == "minimax_vs_expectimax" or (
+                        game.current_player == 'W' and ai_algorithm in ["minimax", "expectimax", "greedy"]):
+                    ai_move = game.get_ai_move()
+                    if ai_move:
+                        game.make_move(game.board, ai_move[0], ai_move[1], game.current_player)
+                        game.current_player = 'B' if game.current_player == 'W' else 'W'
+                        game.game_over = game.check_game_over()
+                    else:
+                        current_player_name = "Minimax" if game.current_player == 'B' else "Expectimax" if ai_algorithm == "minimax_vs_expectimax" else "AI"
+                        show_turn_passed_message(current_player_name)
+                        game.current_player = 'B' if game.current_player == 'W' else 'W'
+                        game.game_over = game.check_game_over()
+
+            if not game.game_over:
+                current_player_moves = game.get_valid_moves(game.board, game.current_player)
+                if not current_player_moves:
+                    current_player_name = "Human" if game.current_player == 'B' else "Minimax" if game.current_player == 'B' and ai_algorithm == "minimax_vs_expectimax" else "Expectimax" if game.current_player == 'W' and ai_algorithm == "minimax_vs_expectimax" else "AI"
+                    show_turn_passed_message(current_player_name)
+                    game.current_player = 'W' if game.current_player == 'B' else 'B'
                     game.game_over = game.check_game_over()
 
-        if not game.game_over and game.current_player == 'W':
-            ai_move = game.get_ai_move()
-            if ai_move:
-                game.make_move(game.board, ai_move[0], ai_move[1], 'W')
-                game.current_player = 'B'
-                game.game_over = game.check_game_over()
+            game.draw_board()
 
-        game.draw_board()
+            font = pygame.font.Font(None, 24)
+            if ai_algorithm == "minimax_vs_expectimax":
+                counter_text = f"Minimax: {minimax_wins}  Expectimax: {expectimax_wins}  Round: {rounds_played + 1}/10"
+            else:
+                counter_text = f"Human: {human_wins}  AI: {ai_wins}"
+            text_surface = font.render(counter_text, True, WHITE)
+            SCREEN.blit(text_surface, (10, 10))
 
-        if game.game_over and game.winner:
-            font = pygame.font.Font(None, 36)
-            text = font.render(f"Winner: {game.winner}", True, WHITE)
-            text_rect = text.get_rect(center=(WINDOW_SIZE / 2, WINDOW_SIZE / 2))
-            s = pygame.Surface((text_rect.width + 20, text_rect.height + 20))
-            s.fill(BLACK)
-            s.set_alpha(128)
-            SCREEN.blit(s, (text_rect.centerx - text_rect.width / 2 - 10,
-                            text_rect.centery - text_rect.height / 2 - 10))
-            SCREEN.blit(text, text_rect)
+            if game.check_game_over():
+                black_count = sum(row.count('B') for row in game.board)
+                white_count = sum(row.count('W') for row in game.board)
 
-        # Check if the current player has any valid moves
-        if not game.game_over:
-            current_player_moves = game.get_valid_moves(game.board, game.current_player)
-            if not current_player_moves:
-                show_turn_passed_message("Human" if game.current_player == 'B' else "AI")
-                game.current_player = 'W' if game.current_player == 'B' else 'B'
-                game.game_over = game.check_game_over()
+                if ai_algorithm == "minimax_vs_expectimax":
+                    if black_count > white_count:
+                        minimax_wins += 1
+                    elif white_count > black_count:
+                        expectimax_wins += 1
+                    winner_text = "Minimax" if black_count > white_count else "Expectimax" if white_count > black_count else "Draw"
+                else:
+                    if game.winner == "Human":
+                        human_wins += 1
+                    elif game.winner == "AI":
+                        ai_wins += 1
+                    winner_text = game.winner
 
-        pygame.display.flip()
-        clock.tick(60)
+                font_large = pygame.font.Font(None, 36)
+                text = font_large.render(f"Winner: {winner_text}", True, WHITE)
+                text_rect = text.get_rect(center=(WINDOW_SIZE / 2, WINDOW_SIZE / 2))
+                s = pygame.Surface((text_rect.width + 20, text_rect.height + 20))
+                s.fill(BLACK)
+                s.set_alpha(128)
+                SCREEN.blit(s, (
+                text_rect.centerx - text_rect.width // 2 - 10, text_rect.centery - text_rect.height // 2 - 10))
+                SCREEN.blit(text, text_rect)
+                pygame.display.flip()
+                pygame.time.wait(3000)
+                game_over = True
+
+            pygame.display.flip()
+            clock.tick(60)
+
+        rounds_played += 1
+
+    final_text = ""
+    if ai_algorithm == "minimax_vs_expectimax":
+        final_text = f"Final: Minimax {minimax_wins} - Expectimax {expectimax_wins}"
+    else:
+        final_text = f"Final: Human {human_wins} - AI {ai_wins}"
+
+    font = pygame.font.Font(None, 36)
+    text = font.render(final_text, True, WHITE)
+    text_rect = text.get_rect(center=(WINDOW_SIZE / 2, WINDOW_SIZE / 2))
+    s = pygame.Surface((text_rect.width + 20, text_rect.height + 20))
+    s.fill(BLACK)
+    s.set_alpha(128)
+    SCREEN.blit(s, (text_rect.centerx - text_rect.width // 2 - 10, text_rect.centery - text_rect.height // 2 - 10))
+    SCREEN.blit(text, text_rect)
+    pygame.display.flip()
+    pygame.time.wait(5000)
+
+    pygame.quit()
+    sys.exit()
 
 
 if __name__ == "__main__":
