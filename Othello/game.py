@@ -1,6 +1,6 @@
 import pygame
 import sys
-import tkinter as tk
+from tkinter import Tk, StringVar
 from tkinter import ttk
 from copy import deepcopy
 
@@ -19,18 +19,18 @@ GRAY = (128, 128, 128)
 
 
 def choose_ai_algorithm():
-    root = tk.Tk()
+    root = Tk()
     root.title("Choose your AI opponent")
 
     window_width = 300
-    window_height = 150
+    window_height = 200
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     x = (screen_width / 2) - (window_width / 2)
     y = (screen_height / 2) - (window_height / 2)
     root.geometry(f'{window_width}x{window_height}+{int(x)}+{int(y)}')
 
-    selected_algorithm = tk.StringVar(value="minimax")
+    selected_algorithm = StringVar(value="minimax")
 
     label = ttk.Label(root, text="Select AI Algorithm:", font=('Arial', 12))
     label.pack(pady=10)
@@ -40,6 +40,9 @@ def choose_ai_algorithm():
 
     expectimax_radio = ttk.Radiobutton(root, text="Expectimax", variable=selected_algorithm, value="expectimax")
     expectimax_radio.pack()
+
+    greedy_radio = ttk.Radiobutton(root, text="Greedy", variable=selected_algorithm, value="greedy")
+    greedy_radio.pack()
 
     def on_select():
         root.quit()
@@ -54,11 +57,11 @@ def choose_ai_algorithm():
 
 
 def show_turn_passed_message(current_player):
-    root = tk.Tk()
+    root = Tk()
     root.title("Turn Passed")
 
     window_width = 300
-    window_height = 100
+    window_height = 150
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     x = (screen_width / 2) - (window_width / 2)
@@ -239,11 +242,30 @@ class OthelloGame:
             avg_eval = total_eval / move_count if move_count != 0 else 0
             return avg_eval, valid_moves[0] if valid_moves else None
 
+    def greedy(self, board, player):
+        """Chooses the move that flips the most pieces."""
+        best_move = None
+        max_flips = -1
+
+        valid_moves = self.get_valid_moves(board, player)
+        for move in valid_moves:
+            new_board = deepcopy(board)
+            self.make_move(new_board, move[0], move[1], player)
+            flipped_count = sum(row.count(player) for row in new_board) - sum(row.count(player) for row in board)
+
+            if flipped_count > max_flips:
+                max_flips = flipped_count
+                best_move = move
+
+        return best_move
+
     def get_ai_move(self):
         if self.ai_algorithm == "minimax":
             _, move = self.minimax(self.board, 5, float('-inf'), float('inf'), False)
-        else:
+        elif self.ai_algorithm == "expectimax":
             _, move = self.expectimax(self.board, 4, False)
+        else:  # Greedy algorithm
+            move = self.greedy(self.board, 'W')
         return move
 
     def draw_board(self):

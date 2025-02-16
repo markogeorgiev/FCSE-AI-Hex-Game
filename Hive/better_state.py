@@ -31,8 +31,6 @@ class Game_State:
 
         self.turn_panel = Turn_Panel()
 
-
-
         # action attributes
 
         self.clicked = False
