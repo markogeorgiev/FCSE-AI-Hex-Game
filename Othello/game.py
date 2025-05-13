@@ -339,14 +339,9 @@ class OthelloGame:
             return True
         return False
 
-
-import time  # Add this at the top with other imports
-
 def main():
     ai_algorithm = choose_ai_algorithm()
-
     clock = pygame.time.Clock()
-
     game = OthelloGame(ai_algorithm)
     game_over = False
 
@@ -364,7 +359,7 @@ def main():
                     if game.make_move(game.board, row, col, 'B'):
                         game.draw_board()
                         pygame.display.flip()
-                        time.sleep(1)  # Wait after human move
+                        time.sleep(1)
                         game.current_player = 'W'
                         game.game_over = game.check_game_over()
 
@@ -376,11 +371,15 @@ def main():
                     game.make_move(game.board, ai_move[0], ai_move[1], game.current_player)
                     game.draw_board()
                     pygame.display.flip()
-                    time.sleep(1)  # Wait after AI move
+                    time.sleep(1)
                     game.current_player = 'B' if game.current_player == 'W' else 'W'
                     game.game_over = game.check_game_over()
                 else:
-                    current_player_name = "Minimax" if game.current_player == 'B' else "Expectimax" if ai_algorithm == "minimax_vs_expectimax" else "AI"
+                    current_player_name = (
+                        "Minimax" if game.current_player == 'B'
+                        else "Expectimax" if ai_algorithm == "minimax_vs_expectimax"
+                        else "AI"
+                    )
                     show_turn_passed_message(current_player_name)
                     game.current_player = 'B' if game.current_player == 'W' else 'W'
                     game.game_over = game.check_game_over()
@@ -388,7 +387,12 @@ def main():
         if not game.game_over:
             current_player_moves = game.get_valid_moves(game.board, game.current_player)
             if not current_player_moves:
-                current_player_name = "Human" if game.current_player == 'B' else "Minimax" if game.current_player == 'B' and ai_algorithm == "minimax_vs_expectimax" else "Expectimax" if game.current_player == 'W' and ai_algorithm == "minimax_vs_expectimax" else "AI"
+                current_player_name = (
+                    "Human" if game.current_player == 'B'
+                    else "Minimax" if game.current_player == 'B' and ai_algorithm == "minimax_vs_expectimax"
+                    else "Expectimax" if game.current_player == 'W' and ai_algorithm == "minimax_vs_expectimax"
+                    else "AI"
+                )
                 show_turn_passed_message(current_player_name)
                 game.current_player = 'W' if game.current_player == 'B' else 'B'
                 game.game_over = game.check_game_over()
@@ -404,7 +408,8 @@ def main():
             s.fill(BLACK)
             s.set_alpha(128)
             SCREEN.blit(s, (
-                text_rect.centerx - text_rect.width // 2 - 10, text_rect.centery - text_rect.height // 2 - 10))
+                text_rect.centerx - text_rect.width // 2 - 10,
+                text_rect.centery - text_rect.height // 2 - 10))
             SCREEN.blit(text, text_rect)
             pygame.display.flip()
             game_over = True
