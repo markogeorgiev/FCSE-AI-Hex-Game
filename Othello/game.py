@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from copy import deepcopy
 import random
+import time
 
 pygame.init()
 
@@ -339,123 +340,85 @@ class OthelloGame:
         return False
 
 
+import time  # Add this at the top with other imports
+
 def main():
     ai_algorithm = choose_ai_algorithm()
 
-    human_wins = 0
-    ai_wins = 0
-    minimax_wins = 0
-    expectimax_wins = 0
-    rounds_played = 0
-    total_rounds = 10 if ai_algorithm == "minimax_vs_expectimax" else 1
-
     clock = pygame.time.Clock()
 
-    while rounds_played < total_rounds:
-        game = OthelloGame(ai_algorithm)
-        game_over = False
+    game = OthelloGame(ai_algorithm)
+    game_over = False
 
-        while not game_over:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+    while not game_over:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-                if ai_algorithm in ["minimax", "expectimax", "greedy"]:
-                    if not game.game_over and event.type == pygame.MOUSEBUTTONDOWN and game.current_player == 'B':
-                        x, y = event.pos
-                        row = y // SQUARE_SIZE
-                        col = x // SQUARE_SIZE
-                        if game.make_move(game.board, row, col, 'B'):
-                            game.current_player = 'W'
-                            game.game_over = game.check_game_over()
-
-            if not game.game_over:
-                if ai_algorithm == "minimax_vs_expectimax" or (
-                        game.current_player == 'W' and ai_algorithm in ["minimax", "expectimax", "greedy"]):
-                    ai_move = game.get_ai_move()
-                    if ai_move:
-                        game.make_move(game.board, ai_move[0], ai_move[1], game.current_player)
-                        game.current_player = 'B' if game.current_player == 'W' else 'W'
-                        game.game_over = game.check_game_over()
-                    else:
-                        current_player_name = "Minimax" if game.current_player == 'B' else "Expectimax" if ai_algorithm == "minimax_vs_expectimax" else "AI"
-                        show_turn_passed_message(current_player_name)
-                        game.current_player = 'B' if game.current_player == 'W' else 'W'
+            if ai_algorithm in ["minimax", "expectimax", "greedy"]:
+                if not game.game_over and event.type == pygame.MOUSEBUTTONDOWN and game.current_player == 'B':
+                    x, y = event.pos
+                    row = y // SQUARE_SIZE
+                    col = x // SQUARE_SIZE
+                    if game.make_move(game.board, row, col, 'B'):
+                        game.draw_board()
+                        pygame.display.flip()
+                        time.sleep(1)  # Wait after human move
+                        game.current_player = 'W'
                         game.game_over = game.check_game_over()
 
-            if not game.game_over:
-                current_player_moves = game.get_valid_moves(game.board, game.current_player)
-                if not current_player_moves:
-                    current_player_name = "Human" if game.current_player == 'B' else "Minimax" if game.current_player == 'B' and ai_algorithm == "minimax_vs_expectimax" else "Expectimax" if game.current_player == 'W' and ai_algorithm == "minimax_vs_expectimax" else "AI"
+        if not game.game_over:
+            if ai_algorithm == "minimax_vs_expectimax" or (
+                    game.current_player == 'W' and ai_algorithm in ["minimax", "expectimax", "greedy"]):
+                ai_move = game.get_ai_move()
+                if ai_move:
+                    game.make_move(game.board, ai_move[0], ai_move[1], game.current_player)
+                    game.draw_board()
+                    pygame.display.flip()
+                    time.sleep(1)  # Wait after AI move
+                    game.current_player = 'B' if game.current_player == 'W' else 'W'
+                    game.game_over = game.check_game_over()
+                else:
+                    current_player_name = "Minimax" if game.current_player == 'B' else "Expectimax" if ai_algorithm == "minimax_vs_expectimax" else "AI"
                     show_turn_passed_message(current_player_name)
-                    game.current_player = 'W' if game.current_player == 'B' else 'B'
+                    game.current_player = 'B' if game.current_player == 'W' else 'W'
                     game.game_over = game.check_game_over()
 
-            game.draw_board()
+        if not game.game_over:
+            current_player_moves = game.get_valid_moves(game.board, game.current_player)
+            if not current_player_moves:
+                current_player_name = "Human" if game.current_player == 'B' else "Minimax" if game.current_player == 'B' and ai_algorithm == "minimax_vs_expectimax" else "Expectimax" if game.current_player == 'W' and ai_algorithm == "minimax_vs_expectimax" else "AI"
+                show_turn_passed_message(current_player_name)
+                game.current_player = 'W' if game.current_player == 'B' else 'B'
+                game.game_over = game.check_game_over()
 
-            font = pygame.font.Font(None, 24)
-            if ai_algorithm == "minimax_vs_expectimax":
-                counter_text = f"Minimax: {minimax_wins}  Expectimax: {expectimax_wins}  Round: {rounds_played + 1}/10"
-            else:
-                counter_text = f"Human: {human_wins}  AI: {ai_wins}"
-            text_surface = font.render(counter_text, True, WHITE)
-            SCREEN.blit(text_surface, (10, 10))
+        game.draw_board()
 
-            if game.check_game_over():
-                black_count = sum(row.count('B') for row in game.board)
-                white_count = sum(row.count('W') for row in game.board)
-
-                if ai_algorithm == "minimax_vs_expectimax":
-                    if black_count > white_count:
-                        minimax_wins += 1
-                    elif white_count > black_count:
-                        expectimax_wins += 1
-                    winner_text = "Minimax" if black_count > white_count else "Expectimax" if white_count > black_count else "Draw"
-                else:
-                    if game.winner == "Human":
-                        human_wins += 1
-                    elif game.winner == "AI":
-                        ai_wins += 1
-                    winner_text = game.winner
-
-                font_large = pygame.font.Font(None, 36)
-                text = font_large.render(f"Winner: {winner_text}", True, WHITE)
-                text_rect = text.get_rect(center=(WINDOW_SIZE / 2, WINDOW_SIZE / 2))
-                s = pygame.Surface((text_rect.width + 20, text_rect.height + 20))
-                s.fill(BLACK)
-                s.set_alpha(128)
-                SCREEN.blit(s, (
+        if game.check_game_over():
+            winner_text = game.winner
+            font_large = pygame.font.Font(None, 36)
+            text = font_large.render(f"Winner: {winner_text}", True, WHITE)
+            text_rect = text.get_rect(center=(WINDOW_SIZE / 2, WINDOW_SIZE / 2))
+            s = pygame.Surface((text_rect.width + 20, text_rect.height + 20))
+            s.fill(BLACK)
+            s.set_alpha(128)
+            SCREEN.blit(s, (
                 text_rect.centerx - text_rect.width // 2 - 10, text_rect.centery - text_rect.height // 2 - 10))
-                SCREEN.blit(text, text_rect)
-                pygame.display.flip()
-                pygame.time.wait(3000)
-                game_over = True
-
+            SCREEN.blit(text, text_rect)
             pygame.display.flip()
-            clock.tick(60)
+            game_over = True
 
-        rounds_played += 1
+        pygame.display.flip()
+        clock.tick(60)
 
-    final_text = ""
-    if ai_algorithm == "minimax_vs_expectimax":
-        final_text = f"Final: Minimax {minimax_wins} - Expectimax {expectimax_wins}"
-    else:
-        final_text = f"Final: Human {human_wins} - AI {ai_wins}"
+    # Keep window open until manually closed
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-    font = pygame.font.Font(None, 36)
-    text = font.render(final_text, True, WHITE)
-    text_rect = text.get_rect(center=(WINDOW_SIZE / 2, WINDOW_SIZE / 2))
-    s = pygame.Surface((text_rect.width + 20, text_rect.height + 20))
-    s.fill(BLACK)
-    s.set_alpha(128)
-    SCREEN.blit(s, (text_rect.centerx - text_rect.width // 2 - 10, text_rect.centery - text_rect.height // 2 - 10))
-    SCREEN.blit(text, text_rect)
-    pygame.display.flip()
-    pygame.time.wait(5000)
-
-    pygame.quit()
-    sys.exit()
 
 
 if __name__ == "__main__":
